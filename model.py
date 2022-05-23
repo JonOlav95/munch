@@ -26,10 +26,10 @@ def get_model(img_size):
     x = tf.keras.layers.Conv2D(32, 1, strides=2, padding="same")(inputs)
     x = tf.keras.layers.BatchNormalization()(x)
 
-    for filters in [32, 64, 128]:
+    for filters in [64, 128, 256, 512, 512, 512, 512]:
         x = downsample(x, filters)
 
-    for filters in [128, 64, 32]:
+    for filters in [512, 512, 512, 512, 256, 128, 64]:
         x = upsample(x, filters)
 
     outputs = tf.keras.layers.Conv2DTranspose(1, 2, 2, padding="same", activation="tanh")(x)
