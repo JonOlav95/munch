@@ -11,6 +11,10 @@ log_dir: 'logs/'
 checkpoint_dir: 'checkpoints/'
 checkpoint_prefix: 'checkpoints/ckpt'
 
+# checkpoints
+checkpoint_nsave: 100
+checkpoint_load: False
+
 # training
 max_iters: 100000
 

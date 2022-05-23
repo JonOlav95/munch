@@ -35,7 +35,6 @@ def load_data(path="dataset/"):
         img = tf.convert_to_tensor(img)
         masked_img = tf.concat((img_x, mask, img), axis=2)
 
-        ds[i] = img
         ds[i] = masked_img
 
     ds = tf.data.Dataset.from_tensor_slices(ds.tolist())
