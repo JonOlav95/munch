@@ -1,0 +1,14 @@
+# ============ Settings ============
+# machine info
+num_gpus: 1
+
+# hyperparameters
+dataset_dir: 'dataset/'
+log_dir: 'logs/'
+
+# training
+max_iters: 100000
+
+# loss
+disc_loss: True
+l1_loss: True
