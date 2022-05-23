@@ -31,7 +31,7 @@ def train(model, disc, ds):
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                      discriminator_optimizer=discriminator_optimizer,
                                      generator=model,
-                                     discriminator=discriminator)
+                                     discriminator=disc)
 
     for i in range(epochs):
 
@@ -44,7 +44,7 @@ def train(model, disc, ds):
 
             loss_arr.append(loss.numpy())
 
-        if i % 100 == 0:
-            checkpoint.save()
+        if (i + 1) % 100 == 0:
+            checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
-        print("loss: " + str(statistics.mean(loss_arr)))
+        print("Epoch: {}\nLoss: {}".format(i, statistics.mean(loss_arr)))
