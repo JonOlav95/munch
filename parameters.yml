@@ -3,8 +3,13 @@
 num_gpus: 1
 
 # hyperparameters
+img_size: [256, 256, 1]
+
+# directories
 dataset_dir: 'dataset/'
 log_dir: 'logs/'
+checkpoint_dir: 'checkpoints/'
+checkpoint_prefix: 'checkpoints/ckpt'
 
 # training
 max_iters: 100000

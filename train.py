@@ -1,8 +1,7 @@
 import tensorflow as tf
 import statistics
 from model import *
-
-optimizer = tf.keras.optimizers.Adam(0.01, beta_1=0.5)
+from main import *
 
 
 def loss_function(output, y):
@@ -21,13 +20,18 @@ def train_step(model, x, y):
         loss = loss_function(output, y)
 
     gradients = tape.gradient(loss, model.trainable_variables)
-    optimizer.apply_gradients(zip(gradients, model.trainable_variables))
+    generator_optimizer.apply_gradients(zip(gradients, model.trainable_variables))
 
     return loss
 
 
-def train(model, ds):
-    epochs = 100
+def train(model, disc, ds):
+    epochs = FLAGS["max_iters"]
+
+    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                     discriminator_optimizer=discriminator_optimizer,
+                                     generator=model,
+                                     discriminator=discriminator)
 
     for i in range(epochs):
 
@@ -39,5 +43,8 @@ def train(model, ds):
             loss = train_step(model, x, y)
 
             loss_arr.append(loss.numpy())
+
+        if i % 100 == 0:
+            checkpoint.save()
 
         print("loss: " + str(statistics.mean(loss_arr)))
