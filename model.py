@@ -21,9 +21,9 @@ def get_model(img_size):
     input_img = tf.keras.layers.Input(shape=img_size)
     input_mask = tf.keras.layers.Input(shape=img_size)
 
-    inputs = tf.keras.layers.Concatenate(axis=3)([input_img, input_mask])
+    x = tf.keras.layers.concatenate([input_img, input_mask])
 
-    x = tf.keras.layers.Conv2D(32, 1, strides=2, padding="same")(inputs)
+    x = tf.keras.layers.Conv2D(32, 1, strides=2, padding="same")(x)
     x = tf.keras.layers.BatchNormalization()(x)
 
     for filters in [64, 128, 256, 512, 512, 512, 512]:
@@ -34,7 +34,7 @@ def get_model(img_size):
 
     outputs = tf.keras.layers.Conv2DTranspose(1, 2, 2, padding="same", activation="tanh")(x)
 
-    model = tf.keras.Model(inputs=inputs, outputs=outputs)
+    model = tf.keras.Model(inputs=[input_img, input_mask], outputs=outputs)
     model.summary()
     return model
 
@@ -43,16 +43,16 @@ def discriminator(img_size):
     input_img = tf.keras.layers.Input(shape=img_size)
     input_mask = tf.keras.layers.Input(shape=img_size)
 
-    inputs = tf.keras.layers.Concatenate(axis=3)([input_img, input_mask])
+    x = tf.keras.layers.concatenate([input_img, input_mask])
 
-    x = tf.keras.layers.Conv2D(64, 1, strides=2, padding="same")(inputs)
+    x = tf.keras.layers.Conv2D(64, 1, strides=2, padding="same")(x)
     x = tf.keras.layers.BatchNormalization()(x)
 
     for filters in [128, 256, 256, 256, 256]:
         x = downsample(x, filters)
 
     outputs = tf.keras.layers.Conv2D(1, 4, strides=1)(x)
-    model = tf.keras.Model(inputs=inputs, outputs=outputs)
+    model = tf.keras.Model(inputs=[input_img, input_mask], outputs=outputs)
     model.summary()
     return model
 
