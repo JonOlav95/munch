@@ -42,5 +42,5 @@ def create_mask(w, h):
 
 
 def merge_mask_img(img, mask):
-    img[mask[:] == 1] = 0
+    img[mask[:] == 1] = 1
     return img

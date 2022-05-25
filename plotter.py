@@ -23,7 +23,7 @@ def plot_one(ds, discriminator, generator):
     #disc_gen_result = discriminator([generated_image], training=False)
     #disc_gen_result = round(tf.math.reduce_mean(disc_gen_result).numpy(), 2)
 
-    images = [x, generated_image, y]
+    images = [x, mask, generated_image, y]
 
     fig = plt.figure()
     for i in range(len(images)):

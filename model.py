@@ -67,13 +67,15 @@ def discriminator(img_size):
 
     x = tf.keras.layers.concatenate([input_img, input_mask])
 
-    x = tf.keras.layers.Conv2D(64, 1, strides=2, padding="same")(x)
+    x = tf.keras.layers.Conv2D(64, 1, strides=2, padding="same", use_bias=False)(x)
     x = tf.keras.layers.BatchNormalization()(x)
 
-    for filters in [128, 256, 256, 256, 256]:
+    for filters in [128, 256, 256, 256, 512]:
         x = downsample(x, filters)
 
-    outputs = tf.keras.layers.Conv2D(1, 4, strides=1)(x)
+    x = tf.keras.layers.ZeroPadding2D()(x)
+
+    outputs = tf.keras.layers.Conv2D(1, 4, strides=1, activation="sigmoid", use_bias=False)(x)
     model = tf.keras.Model(inputs=[input_img, input_mask], outputs=outputs)
     model.summary()
     return model
