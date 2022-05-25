@@ -3,7 +3,7 @@ import statistics
 
 from data_handler import load_data
 from model import *
-from main import *
+from main import FLAGS, generator_optimizer, discriminator_optimizer
 
 loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
