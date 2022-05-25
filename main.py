@@ -1,6 +1,5 @@
 import yaml
 import tensorflow as tf
-from data_handler import load_data
 from train import *
 
 generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
@@ -11,13 +10,6 @@ FLAGS = yaml.safe_load(f)
 f.close()
 
 
-def main():
-    dataset = load_data()
-    model = get_model(FLAGS.get("img_size"))
-    disc = discriminator(FLAGS.get("img_size"))
-    train(model, disc, dataset)
-
-
 if __name__ == "__main__":
     tf.config.run_functions_eagerly(True)
-    main()
+    train()

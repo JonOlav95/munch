@@ -1,5 +1,7 @@
 import tensorflow as tf
 import statistics
+
+from data_handler import load_data
 from model import *
 from main import *
 
@@ -27,10 +29,10 @@ def generator_loss(disc_generated_output, gen_output, target):
 @tf.function
 def train_step(model, disc, x, mask, y):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        gen_output = model(tf.concat([x, mask], axis=3), training=True)
+        gen_output = model([x, mask], training=True)
 
-        disc_real_output = disc(tf.concat([y, mask], axis=3), training=True)
-        disc_generated_output = disc(tf.concat([gen_output, mask], axis=3), training=True)
+        disc_real_output = disc([y, mask], training=True)
+        disc_generated_output = disc([gen_output, mask], training=True)
 
         gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output, y)
         disc_loss = discriminator_loss(disc_real_output, disc_generated_output)
@@ -44,7 +46,10 @@ def train_step(model, disc, x, mask, y):
     return gen_total_loss
 
 
-def train(model, disc, ds):
+def train():
+    ds = load_data()
+    model = get_model(FLAGS.get("img_size"))
+    disc = discriminator(FLAGS.get("img_size"))
     epochs = FLAGS["max_iters"]
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,

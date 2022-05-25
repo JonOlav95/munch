@@ -4,13 +4,17 @@ import numpy as np
 
 from PIL import Image
 from mask import create_mask, merge_mask_img
+from main import FLAGS
 
 
 def load_data(path="dataset/"):
     _, _, filenames = next(os.walk(path))
 
     filenames = np.array(filenames)
+
     ds_size = len(filenames)
+    if ds_size > FLAGS["training_samples"]:
+        ds_size = FLAGS["training_samples"]
 
     ds = np.empty(ds_size, dtype=object)
 
