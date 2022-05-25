@@ -13,7 +13,7 @@ checkpoint_dir: 'checkpoints/'
 checkpoint_prefix: 'checkpoints/ckpt'
 
 # checkpoints
-checkpoint_nsave: 50
+checkpoint_nsave: 20
 checkpoint_load: False
 
 # training
