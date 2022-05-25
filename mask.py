@@ -5,7 +5,8 @@ import matplotlib.pyplot as plt
 
 
 def create_circular_mask(w, h):
-    radius = random.randrange(50, 100)
+    max_radius = w / 2
+    radius = random.randrange(int(max_radius * 0.4), int(max_radius * 0.9))
     center = (random.randrange(radius, h - radius), random.randrange(radius, w - radius))
 
     Y, X = np.ogrid[:h, :w]
@@ -18,7 +19,7 @@ def create_circular_mask(w, h):
 def create_rec_mask(w, h):
     rec_mask = np.full((w, h), False)
 
-    rec_size = random.randrange(50, 100)
+    rec_size = random.randrange(int(w * 0.3), int(w * 0.8))
 
     rec_x1 = random.randrange(0, w - rec_size)
     rec_y1 = random.randrange(0, h - rec_size)
@@ -31,7 +32,10 @@ def create_rec_mask(w, h):
     return rec_mask
 
 
-def create_mask(w, h):
+def create_mask(dim):
+    w = dim[0]
+    h = dim[1]
+
     circle_mask = create_circular_mask(w, h)
     rec_mask = create_rec_mask(w, h)
 

@@ -3,14 +3,15 @@
 num_gpus: 1
 
 # hyperparameters
-img_size: [256, 256, 1]
-training_samples: 100
+img_size: [128, 128, 1]
+training_samples: 3000
 max_iters: 100000
-batch_size: 2
+batch_size: 4
 plotting: True
+debug: True
 
 # directories
-dataset_dir: 'dataset/'
+dataset_dir: 'intel_dataset/'
 log_dir: 'logs/'
 checkpoint_dir: 'checkpoints/'
 checkpoint_prefix: 'checkpoints/ckpt'

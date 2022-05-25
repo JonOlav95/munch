@@ -11,5 +11,7 @@ f.close()
 
 
 if __name__ == "__main__":
-    tf.config.run_functions_eagerly(True)
+    if FLAGS["debug"]:
+        tf.config.run_functions_eagerly(True)
+
     train()

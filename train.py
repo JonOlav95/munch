@@ -2,6 +2,7 @@ import tensorflow as tf
 import statistics
 
 from data_handler import load_data
+from generator import generator
 from model import *
 from main import FLAGS, generator_optimizer, discriminator_optimizer
 from plotter import plot_one
@@ -48,9 +49,9 @@ def train_step(model, disc, x, mask, y):
 
 
 def train():
-    ds = load_data()
-    model = get_model(FLAGS.get("img_size"))
+    model = generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
+    ds = load_data()
     epochs = FLAGS["max_iters"]
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,

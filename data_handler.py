@@ -7,7 +7,8 @@ from mask import create_mask, merge_mask_img
 from main import FLAGS
 
 
-def load_data(path="dataset/"):
+def load_data():
+    path = FLAGS["dataset_dir"]
     _, _, filenames = next(os.walk(path))
 
     filenames = np.array(filenames)
@@ -18,14 +19,16 @@ def load_data(path="dataset/"):
 
     ds = np.empty(ds_size, dtype=object)
 
+    img_size = FLAGS["img_size"][:2]
+
     for i in range(ds_size):
         groundtruth = Image.open(path + filenames[i]).convert("L")
-        groundtruth = groundtruth.resize((256, 256))
+        groundtruth = groundtruth.resize(img_size)
 
         groundtruth = np.array(groundtruth, dtype="float32")
         groundtruth = groundtruth / 255.
 
-        mask = create_mask(256, 256)
+        mask = create_mask(img_size)
         masked_img = merge_mask_img(np.copy(groundtruth), mask)
 
         groundtruth = np.expand_dims(groundtruth, axis=2)
