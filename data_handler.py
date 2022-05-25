@@ -19,29 +19,28 @@ def load_data(path="dataset/"):
     ds = np.empty(ds_size, dtype=object)
 
     for i in range(ds_size):
-        img = Image.open(path + filenames[i]).convert("L")
-        img = img.resize((256, 256))
+        groundtruth = Image.open(path + filenames[i]).convert("L")
+        groundtruth = groundtruth.resize((256, 256))
 
-        img = np.array(img, dtype="float32")
-        img = img / 255.
+        groundtruth = np.array(groundtruth, dtype="float32")
+        groundtruth = groundtruth / 255.
 
-        img_x = np.copy(img)
         mask = create_mask(256, 256)
-        merge_mask_img(img, mask)
+        masked_img = merge_mask_img(np.copy(groundtruth), mask)
 
-        img = np.expand_dims(img, axis=2)
-        img_x = np.expand_dims(img_x, axis=2)
+        groundtruth = np.expand_dims(groundtruth, axis=2)
+        masked_img = np.expand_dims(masked_img, axis=2)
         mask = np.expand_dims(mask, axis=2)
 
-        img_x = tf.convert_to_tensor(img_x)
+        masked_img = tf.convert_to_tensor(masked_img)
         mask = tf.convert_to_tensor(mask)
+        groundtruth = tf.convert_to_tensor(groundtruth)
 
-        img = tf.convert_to_tensor(img)
-        masked_img = tf.concat((img_x, mask, img), axis=2)
+        data = tf.concat((masked_img, mask, groundtruth), axis=2)
 
-        ds[i] = masked_img
+        ds[i] = data
 
     ds = tf.data.Dataset.from_tensor_slices(ds.tolist())
-    ds = ds.batch(2)
+    ds = ds.batch(FLAGS["batch_size"])
 
     return ds

@@ -4,6 +4,7 @@ import statistics
 from data_handler import load_data
 from model import *
 from main import FLAGS, generator_optimizer, discriminator_optimizer
+from plotter import plot_one
 
 loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
 
@@ -43,7 +44,7 @@ def train_step(model, disc, x, mask, y):
     generator_optimizer.apply_gradients(zip(generator_gradients, model.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(discriminator_gradients, disc.trainable_variables))
 
-    return gen_total_loss
+    return gen_total_loss, gen_gan_loss, gen_l1_loss, disc_loss
 
 
 def train():
@@ -63,11 +64,17 @@ def train():
 
         for batch in ds:
             x, mask, y = tf.split(value=batch, num_or_size_splits=3, axis=3)
-            loss = train_step(model, disc, x, mask, y)
+            gen_total_loss, gen_gan_loss, gen_l1_loss, disc_loss = train_step(model, disc, x, mask, y)
 
-            loss_arr.append(loss.numpy())
+            loss_arr.append((gen_total_loss.numpy(), gen_gan_loss.numpy(), gen_l1_loss.numpy(), disc_loss.numpy()))
+
+        print("Epoch: {}\nGAN Loss: {}\nL1 Loss: {}\nDisc Loss: {}".format(i,
+                                                                           statistics.mean(loss_arr[1]),
+                                                                           statistics.mean(loss_arr[2]),
+                                                                           statistics.mean(loss_arr[3])))
 
         if (i + 1) % FLAGS["checkpoint_nsave"] == 0:
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
-        print("Epoch: {}\nLoss: {}".format(i, statistics.mean(loss_arr)))
+        if FLAGS["plotting"]:
+            plot_one(ds, disc, model)
