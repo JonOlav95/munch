@@ -2,15 +2,15 @@
 # machine info
 num_gpus: 1
 
-# hyperparameters
-full_img_size: [256, 256, 1]
-img_size: [256, 256]
-channels: [1]
-training_samples: 3000
-max_iters: 100000
-batch_size: 4
+# config
 plotting: True
 debug: True
+
+# hyperparameters
+img_size: [256, 256, 1]
+training_samples: 100
+max_iters: 100000
+batch_size: 4
 
 # directories
 dataset_dir: 'dataset/'
@@ -20,6 +20,7 @@ checkpoint_prefix: 'checkpoints/ckpt'
 
 # checkpoints
 checkpoint_nsave: 20
+checkpoint_save: False
 checkpoint_load: False
 
 # loss

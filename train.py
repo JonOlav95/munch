@@ -49,9 +49,8 @@ def train_step(model, disc, x, mask, y):
 
 
 def train():
-    model = st_generator(FLAGS.get("full_img_size"))
-    #model = gated_generator(FLAGS.get("full_img_size"))
-    disc = discriminator(FLAGS.get("full_img_size"))
+    model = st_generator(FLAGS.get("img_size"))
+    disc = discriminator(FLAGS.get("img_size"))
     ds = load_data()
     epochs = FLAGS["max_iters"]
 
@@ -59,6 +58,9 @@ def train():
                                      discriminator_optimizer=discriminator_optimizer,
                                      generator=model,
                                      discriminator=disc)
+
+    if FLAGS["checkpoint_load"]:
+        checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
 
     for i in range(epochs):
 
@@ -79,7 +81,7 @@ def train():
                       statistics.mean(loss_arr[2]),
                       statistics.mean(loss_arr[3])))
 
-        if (i + 1) % FLAGS["checkpoint_nsave"] == 0:
+        if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
         if FLAGS["plotting"]:
