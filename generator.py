@@ -78,27 +78,27 @@ def st_generator(img_size):
 
     x = tf.keras.layers.concatenate([input_img, input_mask])
 
-    x = gated_conv(x, filters=64, ksize=4, stride=2)
-    x = gated_conv(x, filters=128, ksize=3, stride=2)
-    x = gated_conv(x, filters=256, ksize=3, stride=1)
+    x = gated_conv(x, filters=64, ksize=7, stride=2)
+    x = gated_conv(x, filters=128, ksize=4, stride=2)
+    x = gated_conv(x, filters=256, ksize=4, stride=1)
 
-    x = dilated_residual_block(x, filters=256, ksize=3, stride=1)
-    x = dilated_residual_block(x, filters=512, ksize=3, stride=1)
-    x = dilated_residual_block(x, filters=512, ksize=3, stride=1)
-    x = dilated_residual_block(x, filters=512, ksize=3, stride=1)
+    x = dilated_residual_block(x, filters=256, ksize=4, stride=1)
+    x = dilated_residual_block(x, filters=512, ksize=4, stride=1)
+    x = dilated_residual_block(x, filters=512, ksize=4, stride=1)
+    x = dilated_residual_block(x, filters=512, ksize=4, stride=1)
 
     #TODO: Contextual attention
     #x = contextual_attention(x, x, input_mask, 3, 1, rate=2)
 
-    x = dilated_residual_block(x, filters=512, ksize=3, stride=1)
-    x = dilated_residual_block(x, filters=512, ksize=3, stride=1)
-    x = dilated_residual_block(x, filters=512, ksize=3, stride=1)
-    x = dilated_residual_block(x, filters=512, ksize=3, stride=1)
+    x = dilated_residual_block(x, filters=512, ksize=4, stride=1)
+    x = dilated_residual_block(x, filters=512, ksize=4, stride=1)
+    x = dilated_residual_block(x, filters=512, ksize=4, stride=1)
+    x = dilated_residual_block(x, filters=512, ksize=4, stride=1)
 
     x = gated_conv(x, filters=256, ksize=4, stride=1)
     x = gated_deconv(x, filters=128)
     x = gated_deconv(x, filters=64)
-    x = gated_conv(x, 1, 3, 1, activation=None)
+    x = gated_conv(x, filters=1, ksize=7, stride=1, activation=None)
 
     model = tf.keras.Model(inputs=[input_img, input_mask], outputs=x)
     model.summary()
