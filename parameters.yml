@@ -5,6 +5,7 @@ num_gpus: 1
 # config
 plotting: True
 debug: True
+logging: True
 
 # hyperparameters
 img_size: [256, 256, 1]

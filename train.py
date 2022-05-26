@@ -4,10 +4,11 @@ import statistics
 from data_handler import load_data
 from generator import gated_generator, st_generator
 from discriminator import *
+from logging import make_log, log
 from main import FLAGS, generator_optimizer, discriminator_optimizer
 from plotter import plot_one
 
-loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=True)
+loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False)
 
 
 def discriminator_loss(disc_real_output, disc_generated_output):
@@ -62,6 +63,10 @@ def train():
     if FLAGS["checkpoint_load"]:
         checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
 
+    filename = None
+    if FLAGS["logging"]:
+        filename = make_log()
+
     for i in range(epochs):
 
         loss_arr = []
@@ -86,3 +91,6 @@ def train():
 
         if FLAGS["plotting"]:
             plot_one(ds, disc, model)
+
+        if FLAGS["logging"]:
+            log(filename, loss_arr)
