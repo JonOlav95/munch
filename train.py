@@ -4,7 +4,7 @@ import statistics
 from data_handler import load_data
 from generator import gated_generator, st_generator
 from discriminator import *
-from logging import make_log, log
+from loss_logger import make_log, log_loss
 from main import FLAGS, generator_optimizer, discriminator_optimizer
 from plotter import plot_one
 
@@ -95,4 +95,4 @@ def train():
             plot_one(ds, disc, model)
 
         if FLAGS["logging"]:
-            log(filename, loss_arr)
+            log_loss(filename, loss_arr)
