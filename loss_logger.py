@@ -10,6 +10,8 @@ def make_log():
         writer = csv.writer(f)
         writer.writerow(["gen_gan_loss", "gen_l1_loss", "disc_real_loss", "disc_gen_loss"])
 
+    return filename
+
 
 def log_loss(filename, loss):
     with open(filename, "a") as f:

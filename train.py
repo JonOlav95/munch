@@ -78,7 +78,6 @@ def train():
             loss_arr.append((gen_gan_loss.numpy(),
                              gen_l1_loss.numpy(),
                              disc_real_loss.numpy(),
-                             disc_gen_loss.numpy(),
                              disc_gen_loss.numpy()))
 
         print("Epoch: {}\nGEN GAN Loss: {}\nL1 Loss: {}\nDISC Real Loss: {}\nDISC Gen Loss: {}"
