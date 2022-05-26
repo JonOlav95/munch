@@ -75,7 +75,9 @@ def train():
             x, mask, y = tf.split(value=batch, num_or_size_splits=3, axis=3)
             gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(model, disc, x, mask, y)
 
-            loss_arr.append((gen_gan_loss.numpy(), gen_l1_loss.numpy(), disc_real_loss.numpy(),
+            loss_arr.append((gen_gan_loss.numpy(),
+                             gen_l1_loss.numpy(),
+                             disc_real_loss.numpy(),
                              disc_gen_loss.numpy(),
                              disc_gen_loss.numpy()))
 
