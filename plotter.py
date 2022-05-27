@@ -2,16 +2,19 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 
-def take_one(ds):
-    ds = ds.shuffle(16)
-    for img in ds.take(1):
-        return img
+def plot_all(ds, discriminator, generator):
+    for batch in ds:
+        inner_plot(batch, discriminator, generator)
 
 
 def plot_one(ds, discriminator, generator):
-    one = take_one(ds)
+    ds = ds.shuffle(16)
+    for batch in ds.take(1):
+        inner_plot(batch, discriminator, generator)
 
-    x, mask, y = tf.split(value=one, num_or_size_splits=3, axis=3)
+
+def inner_plot(batch, discriminator, generator):
+    x, mask, y = tf.split(value=batch, num_or_size_splits=3, axis=3)
 
     generated_image = generator([x, mask], training=False)
     generated_image = generated_image[0, ...]

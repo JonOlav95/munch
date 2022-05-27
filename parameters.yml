@@ -2,6 +2,10 @@
 # machine info
 num_gpus: 1
 
+# mode
+test: True
+train: False
+
 # config
 plotting: True
 debug: True
@@ -10,6 +14,7 @@ logging: True
 # hyperparameters
 img_size: [256, 256, 1]
 training_samples: 20
+testing_samples: 20
 max_iters: 100000
 batch_size: 4
 

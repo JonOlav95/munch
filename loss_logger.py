@@ -1,7 +1,7 @@
 import csv
 from datetime import datetime
 
-from main import FLAGS
+from config import FLAGS
 
 
 def make_log():

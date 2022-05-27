@@ -5,7 +5,7 @@ from data_handler import load_data
 from generator import gated_generator, st_generator
 from discriminator import *
 from loss_logger import make_log, log_loss
-from main import FLAGS, generator_optimizer, discriminator_optimizer
+from config import FLAGS, generator_optimizer, discriminator_optimizer
 from plotter import plot_one
 
 loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False)
@@ -52,7 +52,7 @@ def train_step(model, disc, x, mask, y):
 def train():
     model = st_generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
-    ds = load_data()
+    ds = load_data(FLAGS["training_samples"])
     epochs = FLAGS["max_iters"]
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
