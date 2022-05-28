@@ -50,14 +50,14 @@ def train_step(model, disc, x, mask, y):
 
 
 def train():
-    model = st_generator(FLAGS.get("img_size"))
+    generator = st_generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
     ds = load_data(FLAGS["training_samples"])
     epochs = FLAGS["max_iters"]
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                      discriminator_optimizer=discriminator_optimizer,
-                                     generator=model,
+                                     generator=generator,
                                      discriminator=disc)
 
     if FLAGS["checkpoint_load"]:
@@ -73,7 +73,7 @@ def train():
 
         for batch in ds:
             x, mask, y = tf.split(value=batch, num_or_size_splits=3, axis=3)
-            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(model, disc, x, mask, y)
+            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(generator, disc, x, mask, y)
 
             loss_arr.append((gen_gan_loss.numpy(),
                              gen_l1_loss.numpy(),
@@ -91,7 +91,7 @@ def train():
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
         if FLAGS["plotting"]:
-            plot_one(ds, disc, model)
+            plot_one(ds, disc, generator)
 
         if FLAGS["logging"]:
             log_loss(filename, loss_arr)

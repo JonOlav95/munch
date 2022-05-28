@@ -32,4 +32,4 @@ checkpoint_load: False
 # loss
 disc_loss: True
 l1_loss: True
-l1_lambda: 3
+l1_lambda: 0.5
