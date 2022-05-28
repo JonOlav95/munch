@@ -3,7 +3,7 @@
 num_gpus: 1
 
 # mode
-test: True
+test: False
 train: False
 
 # config

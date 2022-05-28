@@ -6,6 +6,8 @@ from config import FLAGS
 
 
 if __name__ == "__main__":
+    assert FLAGS["test"] or FLAGS["train"]
+
     if FLAGS["debug"]:
         tf.config.run_functions_eagerly(True)
 
