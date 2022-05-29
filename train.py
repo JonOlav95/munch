@@ -21,7 +21,6 @@ def discriminator_loss(disc_real_output, disc_generated_output):
 
 
 def generator_loss(disc_generated_output, gen_output, target):
-
     l1_loss = 0
     gan_loss = 0
 
