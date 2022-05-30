@@ -1,6 +1,6 @@
 import csv
-from datetime import datetime
 
+from datetime import datetime
 from config import FLAGS
 
 
