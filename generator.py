@@ -4,6 +4,7 @@ from config import FLAGS
 from contextual_attention import contextual_attention
 
 
+
 def gated_conv(x, filters, ksize, stride=1, rate=1, name='conv',
                padding='SAME', activation=tf.keras.activations.elu, training=True):
     """Define conv for generator.
