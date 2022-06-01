@@ -55,9 +55,9 @@ def train_step(model, disc, x, mask, y):
 
 
 def train():
+    ds = load_data(FLAGS["training_samples"])
     generator = st_generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
-    ds = load_data(FLAGS["training_samples"])
     epochs = FLAGS["max_iters"]
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,

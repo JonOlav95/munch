@@ -48,3 +48,12 @@ def create_mask(dim):
 def merge_mask_img(img, mask):
     img[mask[:] == 1] = 1
     return img
+
+
+def merge_mask(img, mask):
+    for i in range(len(mask)):
+        for j in range(len(mask[i])):
+            if mask[i][j][0] == 1:
+                img[i][j] = np.array([0, 0, 0])
+
+    return img
