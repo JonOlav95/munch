@@ -7,17 +7,16 @@ test: False
 train: True
 
 # config
-plotting: True
+plotting: False
 debug: True
 logging: True
 
 # hyperparameters
 img_size: [256, 256, 3]
-channels: 3
 training_samples: 20
 testing_samples: 20
 max_iters: 100000
-batch_size: 16
+batch_size: 2
 
 # directories
 dataset_dir: 'intel_dataset/'
