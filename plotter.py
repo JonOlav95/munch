@@ -1,6 +1,9 @@
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
+from config import FLAGS
+from mask import create_mask, reiterate_mask, mask_batch
+
 
 def plot_all(ds, discriminator, generator):
     for batch in ds:
@@ -14,14 +17,15 @@ def plot_one(ds, discriminator, generator):
 
 
 def inner_plot(batch, discriminator, generator):
-    x, mask, y = tf.split(value=batch, num_or_size_splits=3, axis=3)
+    mask = create_mask(FLAGS["img_size"][:2])
+    masked_batch = mask_batch(batch, mask)
+    masks = reiterate_mask(mask)
 
-    generated_image = generator([x, mask], training=False)
+    generated_image = generator([masked_batch, masks], training=False)
     generated_image = generated_image[0, ...]
 
-    x = x[0, ...]
-    mask = mask[0, ...]
-    y = y[0, ...]
+    x = masked_batch[0, ...]
+    y = batch[0, ...]
 
     #disc_gen_result = discriminator([generated_image], training=False)
     #disc_gen_result = round(tf.math.reduce_mean(disc_gen_result).numpy(), 2)

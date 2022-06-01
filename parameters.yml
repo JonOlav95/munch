@@ -7,19 +7,19 @@ test: False
 train: True
 
 # config
-plotting: False
+plotting: True
 debug: True
 logging: True
 
 # hyperparameters
-img_size: [256, 256, 3]
+img_size: [256, 256, 1]
 training_samples: 20
 testing_samples: 20
 max_iters: 100000
 batch_size: 2
 
 # directories
-dataset_dir: 'intel_dataset/'
+dataset_dir: 'dataset/'
 log_dir: 'logs/'
 checkpoint_dir: 'checkpoints/'
 checkpoint_prefix: 'checkpoints/ckpt'
