@@ -1,7 +1,12 @@
+import itertools
+
 import numpy as np
 import random
 from PIL import Image, ImageDraw
 import matplotlib.pyplot as plt
+import tensorflow as tf
+
+from config import FLAGS
 
 
 def create_circular_mask(w, h):
@@ -41,6 +46,7 @@ def create_mask(dim):
 
     mask = np.logical_or(circle_mask, rec_mask)
     mask = mask.astype(np.float32)
+    mask = np.expand_dims(mask, axis=2)
 
     return mask
 
@@ -57,3 +63,19 @@ def merge_mask(img, mask):
                 img[i][j] = np.array([0, 0, 0])
 
     return img
+
+
+def mask_batch(groundtruth_batch, mask):
+    groundtruth_cast = groundtruth_batch.numpy()
+
+    arr = []
+    for image in groundtruth_cast:
+        arr.append(np.where(mask == 0, image, mask))
+
+    return tf.convert_to_tensor(arr)
+
+
+def reiterate_mask(mask):
+    mask = np.expand_dims(mask, axis=0)
+    masks = np.repeat(mask, FLAGS["batch_size"], axis=0)
+    return tf.convert_to_tensor(masks)

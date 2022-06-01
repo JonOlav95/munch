@@ -6,6 +6,7 @@ from generator import gated_generator, st_generator
 from discriminator import *
 from loss_logger import make_log, log_loss
 from config import FLAGS, generator_optimizer, discriminator_optimizer
+from mask import create_mask, mask_batch, reiterate_mask
 from plotter import plot_one
 
 loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False)
@@ -35,7 +36,7 @@ def generator_loss(disc_generated_output, gen_output, target):
 
 
 @tf.function
-def train_step(model, disc, x, mask, y):
+def train_step(model, disc, x, y, mask):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         gen_output = model([x, mask], training=True)
 
@@ -76,9 +77,13 @@ def train():
 
         loss_arr = []
 
-        for batch in ds:
-            x, mask, y = tf.split(value=batch, num_or_size_splits=3, axis=3)
-            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(generator, disc, x, mask, y)
+        for groundtruth_batch in ds:
+            mask = create_mask(FLAGS["img_size"][:2])
+            masked_batch = mask_batch(groundtruth_batch, mask)
+            masks = reiterate_mask(mask)
+
+            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(generator, disc, masked_batch,
+                                                                                  groundtruth_batch, masks)
 
             loss_arr.append((gen_gan_loss.numpy(),
                              gen_l1_loss.numpy(),

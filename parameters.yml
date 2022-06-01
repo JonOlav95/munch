@@ -13,6 +13,7 @@ logging: True
 
 # hyperparameters
 img_size: [256, 256, 3]
+channels: 3
 training_samples: 20
 testing_samples: 20
 max_iters: 100000
