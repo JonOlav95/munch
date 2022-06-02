@@ -6,11 +6,13 @@ from mask import create_mask, reiterate_mask, mask_batch
 
 
 def plot_all(ds, discriminator, generator):
+    """Plot an image for each batch"""
     for batch in ds:
         inner_plot(batch, discriminator, generator)
 
 
 def plot_one(ds, discriminator, generator):
+    """Plot one image from the dataset"""
     ds = ds.shuffle(16)
     for batch in ds.take(1):
         inner_plot(batch, discriminator, generator)
