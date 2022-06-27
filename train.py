@@ -17,10 +17,13 @@ def train_step(model, disc, x, y, mask):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         gen_output = model([x, mask], training=True)
 
-        disc_real_output = disc([y, mask], training=True)
-        disc_generated_output = disc([gen_output, mask], training=True)
+        stage1_gen = gen_output[0]
+        stage2_gen = gen_output[1]
 
-        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output, y)
+        disc_real_output = disc([y, mask], training=True)
+        disc_generated_output = disc([stage2_gen, mask], training=True)
+
+        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, stage1_gen, stage2_gen, y)
         total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, model.trainable_variables)

@@ -1,7 +1,6 @@
 import tensorflow as tf
 
 from config import FLAGS
-from context_remake_test import context_2
 from contextual_attention import contextual_attention
 
 

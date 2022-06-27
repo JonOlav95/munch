@@ -7,7 +7,7 @@ test: False
 train: True
 
 # config
-plotting: True
+plotting: False
 debug: True
 logging: True
 
