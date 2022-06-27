@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 from config import FLAGS
+
 from contextual_attention import contextual_attention
 
 
