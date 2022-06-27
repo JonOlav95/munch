@@ -34,7 +34,8 @@ def train_step(model, disc, x, y, mask):
 
 def train():
     ds = load_data(FLAGS["training_samples"])
-    generator = st_generator(FLAGS.get("img_size"))
+    generator = gated_generator(FLAGS.get("img_size"))
+    #generator = st_generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
     epochs = FLAGS["max_iters"]
 

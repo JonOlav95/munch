@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 from config import FLAGS
+from context_remake_test import context_2
 from contextual_attention import contextual_attention
 
 
@@ -124,8 +125,11 @@ def st_generator(img_size):
 
 
 def gated_generator(img_size):
-    input_img = tf.keras.layers.Input(shape=img_size)
-    input_mask = tf.keras.layers.Input(shape=img_size)
+    input_img = tf.keras.layers.Input(shape=img_size, batch_size=FLAGS["batch_size"])
+    input_mask = tf.keras.layers.Input(shape=img_size[:2] + [1], batch_size=FLAGS["batch_size"])
+
+    one_mask = input_mask[0, ...]
+    one_mask = tf.expand_dims(one_mask, axis=0)
 
     x = tf.keras.layers.concatenate([input_img, input_mask])
 
@@ -141,7 +145,7 @@ def gated_generator(img_size):
     x = gated_conv(x, 4 * filters, 3, 1, name='conv5')
     x = gated_conv(x, 4 * filters, 3, 1, name='conv6')
 
-    mask_s = resize_mask_like(input_mask, x)
+    mask_s = resize_mask_like(one_mask, x)
 
     x = gated_conv(x, 4 * filters, 3, rate=2, name='conv7_atrous')
     x = gated_conv(x, 4 * filters, 3, rate=4, name='conv8_atrous')

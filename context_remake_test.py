@@ -23,7 +23,7 @@ def resize(x, scale=2, to_shape=None, align_corners=True, dynamic=False,
     return x
 
 
-def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
+def context_2(f, b, mask=None, ksize=3, stride=1, rate=1,
                          fuse_k=3, softmax_scale=10., training=True, fuse=True):
     """ Contextual attention layer implementation.
     Contextual attention is first introduced in publication:
@@ -40,7 +40,6 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
     Returns:
         tf.compat.v1.Tensor: output
     """
-
     # get shapes
     raw_fs = tf.compat.v1.shape(f)
     raw_int_fs = f.get_shape().as_list()
@@ -51,25 +50,18 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
 
     f = tf.reshape(f, raw_int_fs)
     b = tf.reshape(b, raw_int_bs)
-
-
     # extract patches from background with stride and rate
-    kernel = 2 * rate
+    kernel = 2*rate
     raw_w = tf.compat.v1.extract_image_patches(
-        b, [1, kernel, kernel, 1], [1, rate * stride, rate * stride, 1], [1, 1, 1, 1], padding='SAME')
-
-    # Original code does not get the batch size as None
-    batch_size = FLAGS["batch_size"]
-
-    raw_w = tf.compat.v1.reshape(raw_w, [batch_size, -1, kernel, kernel, raw_int_bs[3]])
+        b, [1,kernel,kernel,1], [1,rate*stride,rate*stride,1], [1,1,1,1], padding='SAME')
+    raw_w = tf.compat.v1.reshape(raw_w, [raw_int_bs[0], -1, kernel, kernel, raw_int_bs[3]])
     raw_w = tf.compat.v1.transpose(raw_w, [0, 2, 3, 4, 1])  # transpose to b*k*k*c*hw
     # downscaling foreground option: downscaling both foreground and
     # background for matching and use original background for reconstruction.
-    f = resize(f, scale=1. / rate, func=tf.compat.v1.image.resize_nearest_neighbor)
-    b = resize(b, to_shape=[int(raw_int_bs[1] / rate), int(raw_int_bs[2] / rate)],
-               func=tf.compat.v1.image.resize_nearest_neighbor)  # https://github.com/tensorflow/tensorflow/issues/11651
+    f = resize(f, scale=1./rate, func=tf.compat.v1.image.resize_nearest_neighbor)
+    b = resize(b, to_shape=[int(raw_int_bs[1]/rate), int(raw_int_bs[2]/rate)], func=tf.compat.v1.image.resize_nearest_neighbor)  # https://github.com/tensorflow/tensorflow/issues/11651
     if mask is not None:
-        mask = resize(mask, scale=1. / rate, func=tf.compat.v1.image.resize_nearest_neighbor)
+        mask = resize(mask, scale=1./rate, func=tf.compat.v1.image.resize_nearest_neighbor)
     fs = tf.compat.v1.shape(f)
     int_fs = f.get_shape().as_list()
     f_groups = tf.compat.v1.split(f, int_fs[0], axis=0)
@@ -77,19 +69,18 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
     bs = tf.compat.v1.shape(b)
     int_bs = b.get_shape().as_list()
     w = tf.compat.v1.extract_image_patches(
-        b, [1, ksize, ksize, 1], [1, stride, stride, 1], [1, 1, 1, 1], padding='SAME')
+        b, [1,ksize,ksize,1], [1,stride,stride,1], [1,1,1,1], padding='SAME')
     w = tf.compat.v1.reshape(w, [int_fs[0], -1, ksize, ksize, int_fs[3]])
     w = tf.compat.v1.transpose(w, [0, 2, 3, 4, 1])  # transpose to b*k*k*c*hw
     # process mask
     if mask is None:
         mask = tf.compat.v1.zeros([1, bs[1], bs[2], 1])
     m = tf.compat.v1.extract_image_patches(
-        mask, [1, ksize, ksize, 1], [1, stride, stride, 1], [1, 1, 1, 1], padding='SAME')
+        mask, [1,ksize,ksize,1], [1,stride,stride,1], [1,1,1,1], padding='SAME')
     m = tf.compat.v1.reshape(m, [1, -1, ksize, ksize, 1])
     m = tf.compat.v1.transpose(m, [0, 2, 3, 4, 1])  # transpose to b*k*k*c*hw
     m = m[0]
-    mm = tf.compat.v1.cast(tf.compat.v1.equal(tf.compat.v1.reduce_mean(m, axis=[0, 1, 2], keep_dims=True), 0.),
-                           tf.compat.v1.float32)
+    mm = tf.compat.v1.cast(tf.compat.v1.equal(tf.compat.v1.reduce_mean(m, axis=[0,1,2], keep_dims=True), 0.), tf.compat.v1.float32)
     w_groups = tf.compat.v1.split(w, int_bs[0], axis=0)
     raw_w_groups = tf.compat.v1.split(raw_w, int_bs[0], axis=0)
     y = []
@@ -100,34 +91,32 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
     for xi, wi, raw_wi in zip(f_groups, w_groups, raw_w_groups):
         # conv for compare
         wi = wi[0]
-        wi_normed = wi / tf.compat.v1.maximum(
-            tf.compat.v1.sqrt(tf.compat.v1.reduce_sum(tf.compat.v1.square(wi), axis=[0, 1, 2])), 1e-4)
-        yi = tf.compat.v1.nn.conv2d(xi, wi_normed, strides=[1, 1, 1, 1], padding="SAME")
+        wi_normed = wi / tf.compat.v1.maximum(tf.compat.v1.sqrt(tf.compat.v1.reduce_sum(tf.compat.v1.square(wi), axis=[0,1,2])), 1e-4)
+        yi = tf.compat.v1.nn.conv2d(xi, wi_normed, strides=[1,1,1,1], padding="SAME")
 
         # conv implementation for fuse scores to encourage large patches
         if fuse:
-            yi = tf.compat.v1.reshape(yi, [1, fs[1] * fs[2], bs[1] * bs[2], 1])
-            yi = tf.compat.v1.nn.conv2d(yi, fuse_weight, strides=[1, 1, 1, 1], padding='SAME')
+            yi = tf.compat.v1.reshape(yi, [1, fs[1]*fs[2], bs[1]*bs[2], 1])
+            yi = tf.compat.v1.nn.conv2d(yi, fuse_weight, strides=[1,1,1,1], padding='SAME')
             yi = tf.compat.v1.reshape(yi, [1, fs[1], fs[2], bs[1], bs[2]])
             yi = tf.compat.v1.transpose(yi, [0, 2, 1, 4, 3])
-            yi = tf.compat.v1.reshape(yi, [1, fs[1] * fs[2], bs[1] * bs[2], 1])
-            yi = tf.compat.v1.nn.conv2d(yi, fuse_weight, strides=[1, 1, 1, 1], padding='SAME')
+            yi = tf.compat.v1.reshape(yi, [1, fs[1]*fs[2], bs[1]*bs[2], 1])
+            yi = tf.compat.v1.nn.conv2d(yi, fuse_weight, strides=[1,1,1,1], padding='SAME')
             yi = tf.compat.v1.reshape(yi, [1, fs[2], fs[1], bs[2], bs[1]])
             yi = tf.compat.v1.transpose(yi, [0, 2, 1, 4, 3])
-        yi = tf.compat.v1.reshape(yi, [1, fs[1], fs[2], bs[1] * bs[2]])
+        yi = tf.compat.v1.reshape(yi, [1, fs[1], fs[2], bs[1]*bs[2]])
 
         # softmax to match
-        yi *= mm  # mask
-        yi = tf.compat.v1.nn.softmax(yi * scale, 3)
-        yi *= mm  # mask
+        yi *=  mm  # mask
+        yi = tf.compat.v1.nn.softmax(yi*scale, 3)
+        yi *=  mm  # mask
 
         offset = tf.compat.v1.argmax(yi, axis=3, output_type=tf.compat.v1.int32)
         offset = tf.compat.v1.stack([offset // fs[2], offset % fs[2]], axis=-1)
         # deconv for patch pasting
         # 3.1 paste center
         wi_center = raw_wi[0]
-        yi = tf.compat.v1.nn.conv2d_transpose(yi, wi_center, tf.compat.v1.concat([[1], raw_fs[1:]], axis=0),
-                                              strides=[1, rate, rate, 1]) / 4.
+        yi = tf.compat.v1.nn.conv2d_transpose(yi, wi_center, tf.compat.v1.concat([[1], raw_fs[1:]], axis=0), strides=[1,rate,rate,1]) / 4.
         y.append(yi)
         offsets.append(offset)
     y = tf.compat.v1.concat(y, axis=0)
@@ -141,7 +130,7 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
     # to flow image
     flow = flow_to_image_tf(offsets)
     # # case2: visualize which pixels are attended
-    # flow = highlight_flow_tf.compat.v1(offsets * tf.compat.v1.cast(mask, tf.compat.v1.int32))
+    # flow = highlight_flow_tf(offsets * tf.compat.v1.cast(mask, tf.compat.v1.int32))
     if rate != 1:
         flow = resize(flow, scale=rate, func=tf.compat.v1.image.resize_bilinear)
     return y, flow
@@ -150,8 +139,8 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
 def flow_to_image_tf(flow, name='flow_to_image'):
     """Tensorflow ops for computing flow to image.
     """
-    with tf.compat.v1.variable_scope(name), tf.compat.v1.device('/cpu:0'):
-        img = tf.compat.v1.py_func(flow_to_image, [flow], tf.compat.v1.float32, stateful=False)
+    with tf.compat.v1.compat.v1.variable_scope(name), tf.compat.v1.compat.v1.device('/cpu:0'):
+        img = tf.compat.v1.compat.v1.py_func(flow_to_image, [flow], tf.compat.v1.compat.v1.float32, stateful=False)
         img.set_shape(flow.get_shape().as_list()[0:-1] + [3])
         img = img / 127.5 - 1.
         return img
