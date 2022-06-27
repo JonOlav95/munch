@@ -3,8 +3,8 @@
 num_gpus: 1
 
 # mode
-test: True
-train: False
+test: False
+train: Truue
 
 # config
 plotting: True
@@ -25,11 +25,11 @@ checkpoint_dir: 'checkpoints/'
 checkpoint_prefix: 'checkpoints/ckpt'
 
 # checkpoints
-checkpoint_nsave: 1
-checkpoint_save: True
-checkpoint_load: True
+checkpoint_nsave: 10
+checkpoint_save: False
+checkpoint_load: False
 
 # loss
 disc_loss: True
 l1_loss: True
-l1_lambda: 0.5
+l1_lambda: 1.

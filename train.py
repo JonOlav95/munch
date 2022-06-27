@@ -4,35 +4,11 @@ import statistics
 from data_handler import load_data
 from generator import gated_generator, st_generator
 from discriminator import *
+from loss_func import generator_loss, discriminator_loss
 from loss_logger import make_log, log_loss
 from config import FLAGS, generator_optimizer, discriminator_optimizer
 from mask import create_mask, mask_batch, reiterate_mask
 from plotter import plot_one
-
-loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False)
-
-
-def discriminator_loss(disc_real_output, disc_generated_output):
-    disc_real_loss = loss_object(tf.ones_like(disc_real_output), disc_real_output)
-    disc_gen_loss = loss_object(tf.zeros_like(disc_generated_output), disc_generated_output)
-
-    total_disc_loss = disc_real_loss + disc_gen_loss
-
-    return total_disc_loss, disc_real_loss, disc_gen_loss
-
-
-def generator_loss(disc_generated_output, gen_output, target):
-    l1_loss = 0
-    gan_loss = 0
-
-    if FLAGS["l1_loss"]:
-        l1_loss = tf.reduce_mean(tf.abs(target - gen_output))
-    if FLAGS["disc_loss"]:
-        gan_loss = loss_object(tf.ones_like(disc_generated_output), disc_generated_output)
-
-    total_gen_loss = gan_loss + (FLAGS["l1_lambda"] * l1_loss)
-
-    return total_gen_loss, gan_loss, l1_loss
 
 
 @tf.function
