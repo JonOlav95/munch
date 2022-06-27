@@ -15,7 +15,7 @@ def load_data(size):
 
     ds_size = len(filenames)
     if ds_size > size:
-        ds_size = size
+        ds_size = size - 1
 
     ds = np.empty(ds_size, dtype=object)
 

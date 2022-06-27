@@ -5,7 +5,7 @@ from config import FLAGS
 
 
 def make_log():
-    filename = FLAGS["log_dir"] + str(datetime.now().strftime("%Y%m%d%H%M%S"))
+    filename = FLAGS["log_dir"] + str(datetime.now().strftime("%Y%m%d%H%M%S")) + ".txt"
     with open(filename, "a") as f:
         writer = csv.writer(f)
         writer.writerow(["gen_gan_loss", "gen_l1_loss", "disc_real_loss", "disc_gen_loss"])

@@ -82,7 +82,6 @@ def resize_mask_like(mask, x):
 
     Returns:
         tf.Tensor: resized mask
-
     """
     shape = x.get_shape().as_list()[1:3]
     mask_resize = tf.image.resize(mask, shape, method='nearest')

@@ -4,7 +4,7 @@ from data_handler import load_data
 from discriminator import discriminator
 from generator import st_generator
 from config import FLAGS, generator_optimizer, discriminator_optimizer
-from plotter import plot_one, plot_all
+from plotter import plot_all
 
 
 def test():

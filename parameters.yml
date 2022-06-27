@@ -12,21 +12,21 @@ debug: True
 logging: True
 
 # hyperparameters
-img_size: [256, 256, 1]
-training_samples: 100
+img_size: [128, 128, 3]
+training_samples: 201
 testing_samples: 100
 max_iters: 100000
-batch_size: 2
+batch_size: 4
 
 # directories
-dataset_dir: 'dataset/'
+dataset_dir: 'intel_dataset/'
 log_dir: 'logs/'
 checkpoint_dir: 'checkpoints/'
 checkpoint_prefix: 'checkpoints/ckpt'
 
 # checkpoints
-checkpoint_nsave: 5
-checkpoint_save: False
+checkpoint_nsave: 1
+checkpoint_save: True
 checkpoint_load: True
 
 # loss
