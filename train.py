@@ -56,6 +56,10 @@ def train():
         start = time.time()
 
         for groundtruth_batch in ds:
+
+            if len(groundtruth_batch) != FLAGS["batch_size"]:
+                continue
+
             mask = create_mask(FLAGS["img_size"][:2])
             masked_batch = mask_batch(groundtruth_batch, mask)
             masks = reiterate_mask(mask, len(groundtruth_batch))

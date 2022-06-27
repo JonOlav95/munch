@@ -3,6 +3,7 @@ from config import FLAGS
 
 hinge = tf.keras.losses.Hinge()
 
+
 def discriminator_loss(disc_real_output, disc_generated_output):
     disc_real_loss = hinge(tf.ones_like(disc_real_output), disc_real_output)
     disc_gen_loss = hinge(tf.zeros_like(disc_generated_output), disc_generated_output)
