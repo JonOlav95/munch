@@ -4,7 +4,7 @@ num_gpus: 1
 
 # mode
 test: False
-train: Truue
+train: True
 
 # config
 plotting: True
