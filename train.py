@@ -1,5 +1,6 @@
 import tensorflow as tf
 import statistics
+import time
 
 from data_handler import load_data
 from generator import gated_generator, st_generator
@@ -52,11 +53,12 @@ def train():
     for i in range(epochs):
 
         loss_arr = []
+        start = time.time()
 
         for groundtruth_batch in ds:
             mask = create_mask(FLAGS["img_size"][:2])
             masked_batch = mask_batch(groundtruth_batch, mask)
-            masks = reiterate_mask(mask)
+            masks = reiterate_mask(mask, len(groundtruth_batch))
 
             gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(generator, disc, masked_batch,
                                                                                   groundtruth_batch, masks)
@@ -66,12 +68,14 @@ def train():
                              disc_real_loss.numpy(),
                              disc_gen_loss.numpy()))
 
+        print(f'Time taken: {time.time() - start:.2f} sec\n', flush=True)
         print("Epoch: {}\nGEN GAN Loss: {}\nL1 Loss: {}\nDISC Real Loss: {}\nDISC Gen Loss: {}"
               .format(i,
                       statistics.mean(loss_arr[0]),
                       statistics.mean(loss_arr[1]),
                       statistics.mean(loss_arr[2]),
-                      statistics.mean(loss_arr[3])))
+                      statistics.mean(loss_arr[3])),
+              flush=True)
 
         if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])

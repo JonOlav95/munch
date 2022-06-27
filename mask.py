@@ -75,7 +75,7 @@ def mask_batch(groundtruth_batch, mask):
     return tf.convert_to_tensor(arr)
 
 
-def reiterate_mask(mask, batch_size=FLAGS["batch_size"]):
+def reiterate_mask(mask, n):
     mask = np.expand_dims(mask, axis=0)
-    masks = np.repeat(mask, batch_size, axis=0)
+    masks = np.repeat(mask, n, axis=0)
     return tf.convert_to_tensor(masks)
