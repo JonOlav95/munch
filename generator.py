@@ -157,13 +157,13 @@ def gated_generator(img_size):
     x = gated_conv(x, 2 * filters, 3, 1, name='conv14')
     x = gated_deconv(x, filters, name='conv15_upsample')
     x = gated_conv(x, filters // 2, 3, 1, name='conv16')
-    x = gated_conv(x, 3, 3, 1, activation=None, name='conv17')
+    x = gated_conv(x, 1, 3, 1, activation=None, name='conv17')
     x = tf.nn.tanh(x)
     x_stage1 = x
 
     # stage2, paste result as input
-    x = x * input_mask + input_img[:, :, :, 0:3] * (1. - input_mask)
-    x.set_shape(input_img[:, :, :, 0:3].get_shape().as_list())
+    x = x * input_mask + input_img[:, :, :, :] * (1. - input_mask)
+    x.set_shape(input_img[:, :, :, :].get_shape().as_list())
     # conv branch
     # xnow = tf.concat([x, ones_x, ones_x*mask], axis=3)
     xnow = x
@@ -197,7 +197,7 @@ def gated_generator(img_size):
     x = gated_conv(x, 2 * filters, 3, 1, name='allconv14')
     x = gated_deconv(x, filters, name='allconv15_upsample')
     x = gated_conv(x, filters // 2, 3, 1, name='allconv16')
-    x = gated_conv(x, 3, 3, 1, activation=None, name='allconv17')
+    x = gated_conv(x, 1, 3, 1, activation=None, name='allconv17')
     x = tf.nn.tanh(x)
     x_stage2 = x
 
