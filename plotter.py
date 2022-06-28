@@ -24,7 +24,12 @@ def inner_plot(batch, discriminator, generator):
     masks = reiterate_mask(mask)
 
     generated_image = generator([masked_batch, masks], training=False)
-    generated_image = generated_image[0, ...]
+
+    stage1_gen = generated_image[0]
+    stage2_gen = generated_image[1]
+
+    stage1_gen = stage1_gen[0, ...]
+    stage2_gen = stage2_gen[0, ...]
 
     x = masked_batch[0, ...]
     y = batch[0, ...]
@@ -32,7 +37,7 @@ def inner_plot(batch, discriminator, generator):
     #disc_gen_result = discriminator([generated_image], training=False)
     #disc_gen_result = round(tf.math.reduce_mean(disc_gen_result).numpy(), 2)
 
-    images = [x, mask, generated_image, y]
+    images = [x, stage1_gen, stage2_gen, y]
 
     fig = plt.figure()
     for i in range(len(images)):
