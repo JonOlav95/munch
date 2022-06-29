@@ -8,7 +8,7 @@ from patch_discriminator import *
 from loss_func import generator_loss, discriminator_loss
 from loss_logger import make_log, log_loss
 from config import FLAGS, generator_optimizer, discriminator_optimizer
-from mask import create_mask, mask_batch, reiterate_mask, mask_image_batch
+from mask import create_mask, mask_image_batch
 from plotter import plot_one
 
 

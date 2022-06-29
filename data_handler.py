@@ -3,7 +3,6 @@ import tensorflow as tf
 import numpy as np
 
 from PIL import Image
-from mask import create_mask, merge_mask_img, merge_mask
 from config import FLAGS
 
 
