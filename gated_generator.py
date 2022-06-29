@@ -9,6 +9,7 @@ def gated_generator(img_size):
     input_img = tf.keras.layers.Input(shape=img_size, batch_size=FLAGS["batch_size"])
     input_mask = tf.keras.layers.Input(shape=img_size[:2] + [1], batch_size=FLAGS["batch_size"])
 
+    n_channeles = img_size[2]
     one_mask = input_mask[0, ...]
     one_mask = tf.expand_dims(one_mask, axis=0)
 
@@ -38,7 +39,7 @@ def gated_generator(img_size):
     x = gated_conv(x, 2 * filters, 3, 1, name='conv14')
     x = gated_deconv(x, filters, name='conv15_upsample')
     x = gated_conv(x, filters // 2, 3, 1, name='conv16')
-    x = gated_conv(x, 1, 3, 1, activation=None, name='conv17')
+    x = gated_conv(x, n_channeles, 3, 1, activation=None, name='conv17')
     x = tf.nn.tanh(x)
     x_stage1 = x
 
@@ -78,7 +79,7 @@ def gated_generator(img_size):
     x = gated_conv(x, 2 * filters, 3, 1, name='allconv14')
     x = gated_deconv(x, filters, name='allconv15_upsample')
     x = gated_conv(x, filters // 2, 3, 1, name='allconv16')
-    x = gated_conv(x, 1, 3, 1, activation=None, name='allconv17')
+    x = gated_conv(x, n_channeles, 3, 1, activation=None, name='allconv17')
     x = tf.nn.tanh(x)
     x_stage2 = x
 

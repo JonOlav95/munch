@@ -3,7 +3,7 @@ import statistics
 import time
 
 from data_handler import load_data
-from gated_generator import gated_generator, st_generator
+from gated_generator import gated_generator
 from patch_discriminator import *
 from loss_func import generator_loss, discriminator_loss
 from loss_logger import make_log, log_loss
