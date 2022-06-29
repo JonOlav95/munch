@@ -1,8 +1,8 @@
 import tensorflow as tf
 
 from data_handler import load_data
-from discriminator import discriminator
-from generator import st_generator, gated_generator
+from patch_discriminator import discriminator
+from gated_generator import st_generator, gated_generator
 from config import FLAGS, generator_optimizer, discriminator_optimizer
 from plotter import plot_all
 

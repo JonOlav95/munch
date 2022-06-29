@@ -7,6 +7,9 @@ dataset
 logs
 /logs
 
+config.py
+parameters.yml
+
 intel_dataset
 /intel_dataset
 
