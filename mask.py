@@ -1,9 +1,5 @@
-import itertools
-
 import numpy as np
 import random
-from PIL import Image, ImageDraw
-import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from config import FLAGS
@@ -51,31 +47,18 @@ def create_mask(dim):
     return mask
 
 
-def merge_mask_img(img, mask):
-    img[mask[:] == 1] = 1
-    return img
+def mask_image_batch(groundtruth_batch, dim=FLAGS["img_size"][:2], n=FLAGS["batch_size"]):
+    mask = create_mask(dim)
 
-
-def merge_mask(img, mask):
-    for i in range(len(mask)):
-        for j in range(len(mask[i])):
-            if mask[i][j][0] == 1:
-                img[i][j] = np.array([0, 0, 0])
-
-    return img
-
-
-def mask_batch(groundtruth_batch, mask):
     groundtruth_cast = groundtruth_batch.numpy()
-
     arr = []
     for image in groundtruth_cast:
         arr.append(np.where(mask == 0, image, mask))
 
-    return tf.convert_to_tensor(arr)
+    masked_batch = tf.convert_to_tensor(arr)
 
-
-def reiterate_mask(mask, n=FLAGS["batch_size"]):
     mask = np.expand_dims(mask, axis=0)
     masks = np.repeat(mask, n, axis=0)
-    return tf.convert_to_tensor(masks)
+    masks = tf.convert_to_tensor(masks)
+
+    return masked_batch, masks

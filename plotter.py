@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from config import FLAGS
-from mask import create_mask, reiterate_mask, mask_batch
+from mask import mask_image_batch
 
 
 def plot_all(ds, discriminator, generator):
@@ -19,9 +19,8 @@ def plot_one(ds, discriminator, generator):
 
 
 def inner_plot(batch, discriminator, generator):
-    mask = create_mask(FLAGS["img_size"][:2])
-    masked_batch = mask_batch(batch, mask)
-    masks = reiterate_mask(mask)
+
+    masked_batch, masks = mask_image_batch(batch, n=len(batch))
 
     generated_image = generator([masked_batch, masks], training=False)
 

@@ -8,7 +8,7 @@ from patch_discriminator import *
 from loss_func import generator_loss, discriminator_loss
 from loss_logger import make_log, log_loss
 from config import FLAGS, generator_optimizer, discriminator_optimizer
-from mask import create_mask, mask_batch, reiterate_mask
+from mask import create_mask, mask_batch, reiterate_mask, mask_image_batch
 from plotter import plot_one
 
 
@@ -64,9 +64,7 @@ def train():
             if len(groundtruth_batch) != FLAGS["batch_size"]:
                 continue
 
-            mask = create_mask(FLAGS["img_size"][:2])
-            masked_batch = mask_batch(groundtruth_batch, mask)
-            masks = reiterate_mask(mask, len(groundtruth_batch))
+            masked_batch, masks = mask_image_batch(groundtruth_batch, n=len(groundtruth_batch))
 
             gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(generator, disc, masked_batch,
                                                                                   groundtruth_batch, masks)
