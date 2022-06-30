@@ -81,7 +81,7 @@ def train():
         for _ in map(distributed_step_fn, ds):
             continue
 
-        print(f'Time taken: {time.time() - start:.2f} sec\n', flush=True)
+        print(f'Time taken for epoch {i:d}: {time.time() - start:.2f} sec', flush=True)
 
         if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
