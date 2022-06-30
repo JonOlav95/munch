@@ -39,7 +39,7 @@ def train():
     ds = load_data(FLAGS["training_samples"])
     epochs = FLAGS["max_iters"]
 
-    strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
+    strategy = tf.distribute.MirroredStrategy()
     ds = strategy.experimental_distribute_dataset(ds)
 
     with strategy.scope():
