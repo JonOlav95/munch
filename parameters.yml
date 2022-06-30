@@ -1,0 +1,35 @@
+# ============ Settings ============
+# machine info
+num_gpus: 1
+
+# mode
+test: True
+train: False
+
+# config
+plotting: False
+debug: True
+logging: True
+
+# hyperparameters
+img_size: [256, 256, 1]
+training_samples: 100
+testing_samples: 600
+max_iters: 100000
+batch_size: 9
+
+# directories
+dataset_dir: 'dataset/'
+log_dir: 'logs/'
+checkpoint_dir: 'checkpoints/'
+checkpoint_prefix: 'checkpoints/ckpt'
+
+# checkpoints
+checkpoint_nsave: 10
+checkpoint_save: False
+checkpoint_load: True
+
+# loss
+disc_loss: True
+l1_loss: True
+l1_lambda: 1.
