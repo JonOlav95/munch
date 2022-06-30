@@ -63,6 +63,6 @@ def load_data(size):
         ds[i] = groundtruth
 
     ds = tf.data.Dataset.from_tensor_slices(ds.tolist())
-    ds = ds.batch(FLAGS["batch_size"])
+    ds = ds.batch(FLAGS["global_batch_size"])
 
     return ds

@@ -47,7 +47,7 @@ def create_mask(dim):
     return mask
 
 
-def mask_image_batch(groundtruth_batch, dim=FLAGS["img_size"][:2], n=FLAGS["batch_size"]):
+def mask_image_batch(groundtruth_batch, dim=FLAGS["img_size"][:2], n=FLAGS["replica_batch_size"]):
     mask = create_mask(dim)
 
     groundtruth_cast = groundtruth_batch.numpy()

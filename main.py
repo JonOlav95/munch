@@ -20,7 +20,6 @@ if __name__ == "__main__":
     #per worker batch size
     #global/total batch size
 
-
     if FLAGS["debug"]:
         tf.config.run_functions_eagerly(True)
 

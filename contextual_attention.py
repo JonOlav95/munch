@@ -43,15 +43,9 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
 
     # get shapes
     raw_fs = tf.compat.v1.shape(f)
+
     raw_int_fs = f.get_shape().as_list()
     raw_int_bs = b.get_shape().as_list()
-
-    raw_int_fs[0] = FLAGS["batch_size"]
-    raw_int_bs[0] = FLAGS["batch_size"]
-
-    f = tf.reshape(f, raw_int_fs)
-    b = tf.reshape(b, raw_int_bs)
-
 
     # extract patches from background with stride and rate
     kernel = 2 * rate
@@ -59,9 +53,7 @@ def contextual_attention(f, b, mask=None, ksize=3, stride=1, rate=1,
         b, [1, kernel, kernel, 1], [1, rate * stride, rate * stride, 1], [1, 1, 1, 1], padding='SAME')
 
     # Original code does not get the batch size as None
-    batch_size = FLAGS["batch_size"]
-
-    raw_w = tf.compat.v1.reshape(raw_w, [batch_size, -1, kernel, kernel, raw_int_bs[3]])
+    raw_w = tf.compat.v1.reshape(raw_w, [FLAGS["replica_batch_size"], -1, kernel, kernel, raw_int_bs[3]])
     raw_w = tf.compat.v1.transpose(raw_w, [0, 2, 3, 4, 1])  # transpose to b*k*k*c*hw
     # downscaling foreground option: downscaling both foreground and
     # background for matching and use original background for reconstruction.

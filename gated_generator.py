@@ -6,8 +6,8 @@ from model_operations import gated_conv, resize_mask_like, gated_deconv
 
 
 def gated_generator(img_size):
-    input_img = tf.keras.layers.Input(shape=img_size, batch_size=FLAGS["batch_size"])
-    input_mask = tf.keras.layers.Input(shape=img_size[:2] + [1], batch_size=FLAGS["batch_size"])
+    input_img = tf.keras.layers.Input(shape=img_size, batch_size=FLAGS["global_batch_size"])
+    input_mask = tf.keras.layers.Input(shape=img_size[:2] + [1], batch_size=FLAGS["global_batch_size"])
 
     n_channeles = img_size[2]
     one_mask = input_mask[0, ...]

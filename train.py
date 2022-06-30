@@ -11,11 +11,7 @@ from config import FLAGS
 from mask import create_mask, mask_image_batch
 from plotter import plot_one
 
-ds = load_data(FLAGS["training_samples"])
-epochs = FLAGS["max_iters"]
-
 strategy = tf.distribute.MirroredStrategy()
-ds = strategy.experimental_distribute_dataset(ds)
 
 with strategy.scope():
     generator = gated_generator(FLAGS.get("img_size"))
@@ -31,9 +27,9 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
 
 
 @tf.function
-def train_step(model, disc, x, y, mask, generator_optimizer, discriminator_optimizer):
+def train_step(x, y, mask):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        gen_output = model([x, mask], training=True)
+        gen_output = generator([x, mask], training=True)
 
         stage1_gen = gen_output[0]
         stage2_gen = gen_output[1]
@@ -44,25 +40,33 @@ def train_step(model, disc, x, y, mask, generator_optimizer, discriminator_optim
         gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, stage1_gen, stage2_gen, y)
         total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
-    generator_gradients = gen_tape.gradient(gen_total_loss, model.trainable_variables)
+    generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)
     discriminator_gradients = disc_tape.gradient(total_disc_loss, disc.trainable_variables)
 
-    generator_optimizer.apply_gradients(zip(generator_gradients, model.trainable_variables))
+    generator_optimizer.apply_gradients(zip(generator_gradients, generator.trainable_variables))
     discriminator_optimizer.apply_gradients(zip(discriminator_gradients, disc.trainable_variables))
 
     return gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss
 
 
-@tf.function
 def distributed_step_fn(groundtruth_batch):
+    if FLAGS["num_gpus"] > 1:
+        groundtruth_batch = groundtruth_batch.values
+        groundtruth_batch = groundtruth_batch[0]
+
+    if len(groundtruth_batch) < FLAGS["replica_batch_size"]:
+        return
 
     masked_batch, masks = mask_image_batch(groundtruth_batch, n=len(groundtruth_batch))
     gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = strategy.run(train_step, args=(
-        generator, disc, masked_batch, groundtruth_batch, masks,
-        generator_optimizer, discriminator_optimizer))
+        masked_batch, groundtruth_batch, masks,
+    ))
 
 
 def train():
+    ds = load_data(FLAGS["training_samples"])
+    ds = strategy.experimental_distribute_dataset(ds)
+    epochs = FLAGS["max_iters"]
 
     if FLAGS["checkpoint_load"]:
         checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
