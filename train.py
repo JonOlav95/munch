@@ -11,6 +11,24 @@ from config import FLAGS
 from mask import create_mask, mask_image_batch
 from plotter import plot_one
 
+ds = load_data(FLAGS["training_samples"])
+epochs = FLAGS["max_iters"]
+
+strategy = tf.distribute.MirroredStrategy()
+ds = strategy.experimental_distribute_dataset(ds)
+
+with strategy.scope():
+    generator = gated_generator(FLAGS.get("img_size"))
+    disc = discriminator(FLAGS.get("img_size"))
+
+    generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+    discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+
+checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                 discriminator_optimizer=discriminator_optimizer,
+                                 generator=generator,
+                                 discriminator=disc)
+
 
 @tf.function
 def train_step(model, disc, x, y, mask, generator_optimizer, discriminator_optimizer):
@@ -35,24 +53,16 @@ def train_step(model, disc, x, y, mask, generator_optimizer, discriminator_optim
     return gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss
 
 
+@tf.function
+def distributed_step_fn(groundtruth_batch):
+
+    masked_batch, masks = mask_image_batch(groundtruth_batch, n=len(groundtruth_batch))
+    gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = strategy.run(train_step, args=(
+        generator, disc, masked_batch, groundtruth_batch, masks,
+        generator_optimizer, discriminator_optimizer))
+
+
 def train():
-    ds = load_data(FLAGS["training_samples"])
-    epochs = FLAGS["max_iters"]
-
-    strategy = tf.distribute.MirroredStrategy()
-    ds = strategy.experimental_distribute_dataset(ds)
-
-    with strategy.scope():
-        generator = gated_generator(FLAGS.get("img_size"))
-        disc = discriminator(FLAGS.get("img_size"))
-
-        generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
-        discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
-
-    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
-                                     discriminator_optimizer=discriminator_optimizer,
-                                     generator=generator,
-                                     discriminator=disc)
 
     if FLAGS["checkpoint_load"]:
         checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
@@ -63,39 +73,14 @@ def train():
 
     for i in range(epochs):
 
-        loss_arr = []
         start = time.time()
-
-        for groundtruth_batch in ds:
-
-            if len(groundtruth_batch) != FLAGS["batch_size"]:
-                continue
-
-            masked_batch, masks = mask_image_batch(groundtruth_batch, n=len(groundtruth_batch))
-
-            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = strategy.run(train_step, args=(
-                generator, disc, masked_batch, groundtruth_batch, masks,
-                generator_optimizer, discriminator_optimizer))
-
-            loss_arr.append((gen_gan_loss.numpy(),
-                             gen_l1_loss.numpy(),
-                             disc_real_loss.numpy(),
-                             disc_gen_loss.numpy()))
+        for result in map(distributed_step_fn, ds):
+            print(str(result))
 
         print(f'Time taken: {time.time() - start:.2f} sec\n', flush=True)
-        print("Epoch: {}\nGEN GAN Loss: {}\nL1 Loss: {}\nDISC Real Loss: {}\nDISC Gen Loss: {}"
-              .format(i,
-                      statistics.mean(loss_arr[0]),
-                      statistics.mean(loss_arr[1]),
-                      statistics.mean(loss_arr[2]),
-                      statistics.mean(loss_arr[3])),
-              flush=True)
 
         if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
         if FLAGS["plotting"]:
             plot_one(ds, disc, generator)
-
-        if FLAGS["logging"]:
-            log_loss(filename, loss_arr)
