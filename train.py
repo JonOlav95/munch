@@ -74,8 +74,8 @@ def train():
     for i in range(epochs):
 
         start = time.time()
-        for result in map(distributed_step_fn, ds):
-            print(str(result))
+        for _ in map(distributed_step_fn, ds):
+            continue
 
         print(f'Time taken: {time.time() - start:.2f} sec\n', flush=True)
 
