@@ -18,7 +18,6 @@ def gated_generator(img_size):
     #initializer = tf.random_normal_initializer(0., 0.02)
 
     filters = 48
-    # utputs = tf.keras.activations.tanh(x)
 
     x = gated_conv(x, filters, 5, 1, name='conv1')
     x = gated_conv(x, 2 * filters, 3, 2, name='conv2_downsample')
@@ -84,5 +83,5 @@ def gated_generator(img_size):
     x_stage2 = x
 
     model = tf.keras.Model(inputs=[input_img, input_mask], outputs=[x_stage1, x_stage2])
-    model.summary()
+    #model.summary()
     return model

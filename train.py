@@ -7,13 +7,13 @@ from gated_generator import gated_generator
 from patch_discriminator import *
 from loss_func import generator_loss, discriminator_loss
 from loss_logger import make_log, log_loss
-from config import FLAGS, generator_optimizer, discriminator_optimizer
+from config import FLAGS
 from mask import create_mask, mask_image_batch
 from plotter import plot_one
 
 
 @tf.function
-def train_step(model, disc, x, y, mask):
+def train_step(model, disc, x, y, mask, generator_optimizer, discriminator_optimizer):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         gen_output = model([x, mask], training=True)
 
@@ -37,10 +37,17 @@ def train_step(model, disc, x, y, mask):
 
 def train():
     ds = load_data(FLAGS["training_samples"])
-    generator = gated_generator(FLAGS.get("img_size"))
-    #generator = st_generator(FLAGS.get("img_size"))
-    disc = discriminator(FLAGS.get("img_size"))
     epochs = FLAGS["max_iters"]
+
+    strategy = tf.distribute.experimental.MultiWorkerMirroredStrategy()
+    ds = strategy.experimental_distribute_dataset(ds)
+
+    with strategy.scope():
+        generator = gated_generator(FLAGS.get("img_size"))
+        disc = discriminator(FLAGS.get("img_size"))
+
+        generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
+        discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                      discriminator_optimizer=discriminator_optimizer,
@@ -66,8 +73,9 @@ def train():
 
             masked_batch, masks = mask_image_batch(groundtruth_batch, n=len(groundtruth_batch))
 
-            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(generator, disc, masked_batch,
-                                                                                  groundtruth_batch, masks)
+            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = strategy.run(train_step, args=(
+                generator, disc, masked_batch, groundtruth_batch, masks,
+                generator_optimizer, discriminator_optimizer))
 
             loss_arr.append((gen_gan_loss.numpy(),
                              gen_l1_loss.numpy(),

@@ -1,9 +1,29 @@
 import os
 import tensorflow as tf
 import numpy as np
+import matplotlib.pyplot as plt
 
+from scipy import ndimage
 from PIL import Image
 from config import FLAGS
+
+
+def distance_transform(img):
+    threshold = 0.7
+    binary_img = 1.0 * (img > threshold)
+    distance_img = ndimage.distance_transform_edt(binary_img)
+
+    images = [distance_img, binary_img]
+
+    fig = plt.figure()
+    for i in range(len(images)):
+        fig.add_subplot(1, len(images), i + 1)
+        plt.axis("off")
+        plt.imshow(images[i], cmap="gray")
+
+    plt.show()
+
+    return binary_img, distance_img
 
 
 def load_data(size):
@@ -34,7 +54,11 @@ def load_data(size):
         if channels == 1:
             groundtruth = np.expand_dims(groundtruth, axis=2)
 
+        #binary_img, distance_img = distance_transform(groundtruth)
         groundtruth = tf.convert_to_tensor(groundtruth)
+#
+        #binary_img = tf.convert_to_tensor(binary_img)
+        #distance_img = tf.convert_to_tensor(distance_img)
 
         ds[i] = groundtruth
 

@@ -1,6 +1,8 @@
 import tensorflow as tf
 import tensorflow_addons as tfa
 
+from config import FLAGS
+
 
 def downsample(x, filters, kernel_size=2, stride=2):
     # initializer = tf.random_normal_initializer(0., 0.02)
@@ -17,7 +19,7 @@ def downsample(x, filters, kernel_size=2, stride=2):
 
 
 def discriminator(img_size):
-    input_img = tf.keras.layers.Input(shape=img_size)
+    input_img = tf.keras.layers.Input(shape=img_size, batch_size=FLAGS["batch_size"])
     input_mask = tf.keras.layers.Input(shape=img_size[:2] + [1])
 
     x = tf.keras.layers.concatenate([input_img, input_mask])

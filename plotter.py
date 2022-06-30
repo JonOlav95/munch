@@ -36,7 +36,7 @@ def inner_plot(batch, discriminator, generator):
     #disc_gen_result = discriminator([generated_image], training=False)
     #disc_gen_result = round(tf.math.reduce_mean(disc_gen_result).numpy(), 2)
 
-    images = [x, stage1_gen, stage2_gen, y]
+    images = [x, stage2_gen, y]
 
     fig = plt.figure()
     for i in range(len(images)):
