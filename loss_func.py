@@ -1,7 +1,7 @@
 import tensorflow as tf
 from config import FLAGS
 
-hinge = tf.keras.losses.Hinge(reduction=tf.keras.losses.Reduction.NONE)
+hinge = tf.keras.losses.Hinge(reduction=tf.keras.losses.Reduction.SUM)
 
 
 def discriminator_loss(disc_real_output, disc_generated_output):

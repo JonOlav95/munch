@@ -62,6 +62,8 @@ def distributed_step_fn(groundtruth_batch):
         masked_batch, groundtruth_batch, masks,
     ))
 
+    return gen_gan_loss.numpy(), gen_l1_loss.numpy(), disc_real_loss.numpy(), disc_gen_loss.numpy()
+
 
 def train():
     ds = load_data(FLAGS["training_samples"])
@@ -77,10 +79,18 @@ def train():
 
     for i in range(epochs):
 
+        loss_arr = []
         start = time.time()
-        for _ in map(distributed_step_fn, ds):
-            continue
+        for (losses) in map(distributed_step_fn, ds):
+            loss_arr.append(losses)
 
+        print("Epoch: {}\nGEN GAN Loss: {}\nL1 Loss: {}\nDISC Real Loss: {}\nDISC Gen Loss: {}"
+              .format(i,
+                      statistics.mean(loss_arr[0]),
+                      statistics.mean(loss_arr[1]),
+                      statistics.mean(loss_arr[2]),
+                      statistics.mean(loss_arr[3])),
+              flush=True)
         print(f'Time taken for epoch {i:d}: {time.time() - start:.2f} sec', flush=True)
 
         if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:
