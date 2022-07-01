@@ -1,0 +1,7 @@
+matplotlib==3.5.2
+numpy==1.19.5
+Pillow==9.1.1
+PyYAML==6.0
+scipy==1.7.3
+tensorflow==2.5.0
+tensorflow_addons==0.17.1
