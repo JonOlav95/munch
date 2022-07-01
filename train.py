@@ -77,7 +77,7 @@ def train():
     if FLAGS["logging"]:
         filename = make_log()
 
-    
+
 
     for i in range(epochs):
 
