@@ -62,6 +62,12 @@ def distributed_step_fn(groundtruth_batch):
         masked_batch, groundtruth_batch, masks,
     ))
 
+    if FLAGS["num_gpus"] > 1:
+        gen_gan_loss = gen_gan_loss.values[0]
+        gen_l1_loss = gen_l1_loss.values[0]
+        disc_real_loss = disc_real_loss.values[0]
+        disc_gen_loss = disc_gen_loss.values[0]
+
     return gen_gan_loss.numpy(), gen_l1_loss.numpy(), disc_real_loss.numpy(), disc_gen_loss.numpy()
 
 
