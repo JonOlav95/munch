@@ -28,9 +28,15 @@ def distance_transform(img):
 
 def load_data(size):
     path = FLAGS["dataset_dir"]
-    _, _, filenames = next(os.walk(path))
+    _, dirs, filenames = next(os.walk(path))
 
-    filenames = np.array(filenames)
+    if dirs:
+        filenames = []
+        for d in dirs:
+            _, _, f = next(os.walk(path + d))
+            filenames.extend([d + "/" + x for x in f])
+    else:
+        filenames = np.array(filenames)
 
     ds_size = len(filenames)
     if ds_size > size:
