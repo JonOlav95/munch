@@ -3,8 +3,8 @@
 num_gpus: 1
 
 # mode
-test: False
-train: True
+test: True
+train: False
 
 # config
 plotting: False
