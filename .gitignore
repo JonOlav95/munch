@@ -13,6 +13,9 @@ parameters.yml
 intel_dataset
 /intel_dataset
 
+car
+/car
+
 venv
 /venv
 
