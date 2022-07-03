@@ -8,19 +8,20 @@ from plotter import plot_all
 
 
 def test():
-    model = gated_generator(FLAGS.get("img_size"))
+
+    generator = gated_generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
-    ds = load_data(FLAGS["testing_samples"])
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
     discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 
     checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
                                      discriminator_optimizer=discriminator_optimizer,
-                                     generator=model,
+                                     generator=generator,
                                      discriminator=disc)
 
-    if FLAGS["checkpoint_load"]:
-        checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
+    ds = load_data(FLAGS["testing_samples"])
 
-    plot_all(ds, disc, model)
+    checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
+
+    plot_all(ds, disc, generator)

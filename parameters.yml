@@ -3,12 +3,12 @@
 num_gpus: 1
 
 # mode
-test: True
-train: False
+test: False
+train: True
 
 # config
 plotting: False
-debug: True
+debug: False
 logging: True
 
 # hyperparameters
@@ -26,9 +26,9 @@ checkpoint_dir: '../checkpoints/'
 checkpoint_prefix: '../checkpoints/ckpt'
 
 # checkpoints
-checkpoint_nsave: 10
-checkpoint_save: False
-checkpoint_load: False
+checkpoint_nsave: 1
+checkpoint_save: True
+checkpoint_load: True
 
 # loss
 disc_loss: True
