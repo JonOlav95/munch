@@ -7,7 +7,7 @@ test: False
 train: True
 
 # config
-plotting: False
+plotting: True
 debug: False
 logging: True
 
@@ -28,7 +28,7 @@ checkpoint_prefix: '../checkpoints/ckpt'
 # checkpoints
 checkpoint_nsave: 1
 checkpoint_save: True
-checkpoint_load: True
+checkpoint_load: False
 
 # loss
 disc_loss: True

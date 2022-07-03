@@ -6,24 +6,18 @@ import matplotlib.pyplot as plt
 from scipy import ndimage
 from PIL import Image
 from config import FLAGS
+from mask import create_mask
 
 
 def distance_transform(img):
+
     threshold = 0.7
+
     binary_img = 1.0 * (img > threshold)
     distance_img = ndimage.distance_transform_edt(binary_img)
+    distance_img = np.float32(distance_img)
 
-    images = [distance_img, binary_img]
-
-    fig = plt.figure()
-    for i in range(len(images)):
-        fig.add_subplot(1, len(images), i + 1)
-        plt.axis("off")
-        plt.imshow(images[i], cmap="gray")
-
-    plt.show()
-
-    return binary_img, distance_img
+    return distance_img
 
 
 def load_data(size):
@@ -60,13 +54,17 @@ def load_data(size):
         if channels == 1:
             groundtruth = np.expand_dims(groundtruth, axis=2)
 
-        #binary_img, distance_img = distance_transform(groundtruth)
-        groundtruth = tf.convert_to_tensor(groundtruth)
-#
-        #binary_img = tf.convert_to_tensor(binary_img)
-        #distance_img = tf.convert_to_tensor(distance_img)
+        dim = FLAGS["img_size"][:2]
+        mask = create_mask(dim)
 
-        ds[i] = groundtruth
+        masked_img = np.where(mask == 0, groundtruth, mask)
+        distance_img_gr = distance_transform(groundtruth)
+        distance_img_masked = distance_transform(masked_img)
+
+        distance_img_masked = tf.convert_to_tensor(distance_img_masked)
+        distance_img_gr = tf.convert_to_tensor(distance_img_gr)
+
+        ds[i] = [distance_img_masked, distance_img_gr]
 
     ds = tf.data.Dataset.from_tensor_slices(ds.tolist())
     ds = ds.batch(FLAGS["global_batch_size"])

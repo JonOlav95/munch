@@ -3,6 +3,8 @@ import statistics
 import time
 
 from data_handler import load_data
+from distance_plotter import plot_one_distance
+from generator_distance import generator_distance
 from generator_gated import gated_generator
 from patch_discriminator import *
 from loss_func import generator_loss, discriminator_loss
@@ -14,7 +16,7 @@ from plotter import plot_one
 strategy = tf.distribute.MirroredStrategy()
 
 with strategy.scope():
-    generator = gated_generator(FLAGS.get("img_size"))
+    generator = generator_distance(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
@@ -27,17 +29,14 @@ checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
 
 
 @tf.function
-def train_step(x, y, mask):
+def train_step(x, y):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        gen_output = generator([x, mask], training=True)
+        gen_output = generator(x, training=True)
 
-        stage1_gen = gen_output[0]
-        stage2_gen = gen_output[1]
+        disc_real_output = disc([x, y], training=True)
+        disc_generated_output = disc([x, gen_output], training=True)
 
-        disc_real_output = disc([y, mask], training=True)
-        disc_generated_output = disc([stage2_gen, mask], training=True)
-
-        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, stage1_gen, stage2_gen, y)
+        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output, y)
         total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)
@@ -49,17 +48,19 @@ def train_step(x, y, mask):
     return gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss
 
 
-def distributed_step_fn(groundtruth_batch):
+def distributed_step_fn(batch):
     if FLAGS["num_gpus"] > 1:
-        groundtruth_batch = groundtruth_batch.values
-        groundtruth_batch = groundtruth_batch[0]
+        batch = batch.values
+        batch = batch[0]
 
-    if len(groundtruth_batch) < FLAGS["replica_batch_size"]:
+    if len(batch) < FLAGS["replica_batch_size"]:
         return
 
-    masked_batch, masks = mask_image_batch(groundtruth_batch, n=len(groundtruth_batch))
+    distance_img_masked = batch[:, 0, ...]
+    distance_img_gr = batch[:, 1, ...]
+
     gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = strategy.run(train_step, args=(
-        masked_batch, groundtruth_batch, masks,
+        distance_img_masked, distance_img_gr
     ))
 
     if FLAGS["num_gpus"] > 1:
@@ -73,7 +74,6 @@ def distributed_step_fn(groundtruth_batch):
 
 def train():
     ds = load_data(FLAGS["training_samples"])
-    ds = strategy.experimental_distribute_dataset(ds)
     epochs = FLAGS["max_iters"]
 
     if FLAGS["checkpoint_load"]:
@@ -103,4 +103,4 @@ def train():
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
         if FLAGS["plotting"]:
-            plot_one(ds, disc, generator)
+            plot_one_distance(ds, disc, generator)
