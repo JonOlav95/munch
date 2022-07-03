@@ -17,6 +17,9 @@ def distance_transform(img):
     distance_img = ndimage.distance_transform_edt(binary_img)
     distance_img = np.float32(distance_img)
 
+    distance_img[distance_img > 255] = 255
+    distance_img /= 255
+
     return distance_img
 
 
@@ -60,6 +63,16 @@ def load_data(size):
         masked_img = np.where(mask == 0, groundtruth, mask)
         distance_img_gr = distance_transform(groundtruth)
         distance_img_masked = distance_transform(masked_img)
+
+        #plt.imshow(masked_img, cmap="gray")
+        #plt.show()
+        #plt.imshow(distance_img_masked, cmap="gray")
+        #plt.show()
+
+        #plt.imshow(groundtruth, cmap="gray")
+        #plt.show()
+        #plt.imshow(distance_img_gr, cmap="gray")
+        #plt.show()
 
         distance_img_masked = tf.convert_to_tensor(distance_img_masked)
         distance_img_gr = tf.convert_to_tensor(distance_img_gr)

@@ -21,13 +21,13 @@ def inner_plot_distance(batch, discriminator, generator):
     generated_image = generator(distance_img_masked, training=False)
 
     distance_img_masked = batch[0, 0, ...].numpy()
-    gr_img_masked = 1.0 * (distance_img_masked >= 1.0)
+    gr_img_masked = 1 - 1.0 * (distance_img_masked == 0.)
 
     generated_image = generated_image[0].numpy()
-    casted_generated_img = 1.0 * (generated_image >= 1.0)
+    casted_generated_img = 1 - 1.0 * (generated_image < 0.01)
 
     distance_img_gr = batch[0, 1, ...].numpy()
-    casted_gr_img = 1.0 * (distance_img_gr >= 1.0)
+    casted_gr_img = 1 - 1.0 * (distance_img_gr == 0.)
 
     images = [distance_img_masked, gr_img_masked, generated_image, casted_generated_img, distance_img_gr, casted_gr_img]
 

@@ -99,7 +99,7 @@ def train():
               flush=True)
         print(f'Time taken for epoch {i:d}: {time.time() - start:.2f} sec', flush=True)
 
-        if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:
+        if (i + 1) % FLAGS["checkpoint_nsave"] == 0 and FLAGS["checkpoint_save"]:
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
         if FLAGS["plotting"]:

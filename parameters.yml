@@ -13,7 +13,7 @@ logging: True
 
 # hyperparameters
 img_size: [256, 256, 1]
-training_samples: 100
+training_samples: 20
 testing_samples: 100
 max_iters: 100000
 global_batch_size: 4
@@ -26,8 +26,8 @@ checkpoint_dir: '../checkpoints/'
 checkpoint_prefix: '../checkpoints/ckpt'
 
 # checkpoints
-checkpoint_nsave: 1
-checkpoint_save: True
+checkpoint_nsave: 100
+checkpoint_save: False
 checkpoint_load: False
 
 # loss
