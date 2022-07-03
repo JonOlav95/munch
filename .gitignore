@@ -10,6 +10,9 @@ logs
 config.py
 parameters.yml
 
+car
+/car
+
 intel_dataset
 /intel_dataset
 
