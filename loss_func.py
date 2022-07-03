@@ -8,6 +8,9 @@ def discriminator_loss(disc_real_output, disc_generated_output):
     disc_real_loss = hinge(tf.ones_like(disc_real_output), disc_real_output)
     disc_gen_loss = hinge(tf.zeros_like(disc_generated_output), disc_generated_output)
 
+    disc_real_loss /= FLAGS["replica_batch_size"]
+    disc_gen_loss /= FLAGS["replica_batch_size"]
+
     total_disc_loss = disc_real_loss + disc_gen_loss
 
     return total_disc_loss, disc_real_loss, disc_gen_loss
@@ -22,6 +25,9 @@ def generator_loss(disc_generated_output, stage1_gen, stage2_gen, target):
         l1_loss += FLAGS["l1_lambda"] * tf.reduce_mean(tf.abs(target - stage2_gen))
     if FLAGS["disc_loss"]:
         gan_loss = hinge(tf.ones_like(disc_generated_output), disc_generated_output)
+
+    gan_loss /= FLAGS["replica_batch_size"]
+    l1_loss /= FLAGS["replica_batch_size"]
 
     total_gen_loss = gan_loss + l1_loss
 
