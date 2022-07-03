@@ -2,7 +2,7 @@ import tensorflow as tf
 
 from data_handler import load_data
 from patch_discriminator import discriminator
-from gated_generator import gated_generator
+from generator_gated import gated_generator
 from config import FLAGS, generator_optimizer, discriminator_optimizer
 from plotter import plot_all
 
