@@ -20,10 +20,10 @@ global_batch_size: 4
 replica_batch_size: 4
 
 # directories
-dataset_dir: 'car/'
-log_dir: 'logs/'
-checkpoint_dir: 'checkpoints/'
-checkpoint_prefix: 'checkpoints/ckpt'
+dataset_dir: '../car/'
+log_dir: '../logs/'
+checkpoint_dir: '../checkpoints/'
+checkpoint_prefix: '../checkpoints/ckpt'
 
 # checkpoints
 checkpoint_nsave: 10
