@@ -21,10 +21,10 @@ with strategy.scope():
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
     discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 
-checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
-                                 discriminator_optimizer=discriminator_optimizer,
-                                 generator=generator,
-                                 discriminator=disc)
+    checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,
+                                     discriminator_optimizer=discriminator_optimizer,
+                                     generator=generator,
+                                     discriminator=disc)
 
 
 @tf.function
@@ -50,8 +50,7 @@ def train_step(y, x):
 
 def distributed_step_fn(batch):
 
-    batch = batch.values
-    batch = batch[0]
+    batch = batch.values[0]
 
     if len(batch) < FLAGS["replica_batch_size"]:
         return
