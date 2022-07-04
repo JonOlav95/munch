@@ -49,9 +49,9 @@ def train_step(y, x):
 
 
 def distributed_step_fn(batch):
-    if FLAGS["num_gpus"] > 1:
-        batch = batch.values
-        batch = batch[0]
+
+    batch = batch.values
+    batch = batch[0]
 
     if len(batch) < FLAGS["replica_batch_size"]:
         return
@@ -63,26 +63,21 @@ def distributed_step_fn(batch):
         gr_batch, masked_batch
     ))
 
-    if FLAGS["num_gpus"] > 1:
-        gen_gan_loss = gen_gan_loss.values[0]
-        gen_l1_loss = gen_l1_loss.values[0]
-        disc_real_loss = disc_real_loss.values[0]
-        disc_gen_loss = disc_gen_loss.values[0]
+    gen_gan_loss = gen_gan_loss.values[0]
+    gen_l1_loss = gen_l1_loss.values[0]
+    disc_real_loss = disc_real_loss.values[0]
+    disc_gen_loss = disc_gen_loss.values[0]
 
     return gen_gan_loss.numpy(), gen_l1_loss.numpy(), disc_real_loss.numpy(), disc_gen_loss.numpy()
 
 
-def train():
+def train_multi_gpu():
     ds = load_data(FLAGS["training_samples"])
-    #ds = strategy.experimental_distribute_dataset(ds)
+    ds = strategy.experimental_distribute_dataset(ds)
     epochs = FLAGS["max_iters"]
 
     if FLAGS["checkpoint_load"]:
         checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
-
-    filename = None
-    if FLAGS["logging"]:
-        filename = make_log()
 
     for i in range(epochs):
 
@@ -103,5 +98,7 @@ def train():
         if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:
             checkpoint.save(file_prefix=FLAGS["checkpoint_prefix"])
 
+        ''' Plotting does not work in strategy
         if FLAGS["plotting"]:
             plot_one(ds, disc, generator)
+        '''

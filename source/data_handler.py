@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from scipy import ndimage
 from PIL import Image
 from config import FLAGS
+from mask import create_mask
 
 
 def distance_transform(img):
@@ -60,13 +61,15 @@ def load_data(size):
         if channels == 1:
             groundtruth = np.expand_dims(groundtruth, axis=2)
 
-        #binary_img, distance_img = distance_transform(groundtruth)
-        groundtruth = tf.convert_to_tensor(groundtruth)
-#
-        #binary_img = tf.convert_to_tensor(binary_img)
-        #distance_img = tf.convert_to_tensor(distance_img)
+        dim = FLAGS["img_size"][:2]
+        mask = create_mask(dim)
 
-        ds[i] = groundtruth
+        masked_img = np.where(mask == 0, groundtruth, mask)
+
+        groundtruth = tf.convert_to_tensor(groundtruth)
+        masked_img = tf.convert_to_tensor(masked_img)
+
+        ds[i] = [groundtruth, masked_img]
 
     ds = tf.data.Dataset.from_tensor_slices(ds.tolist())
     ds = ds.batch(FLAGS["global_batch_size"])

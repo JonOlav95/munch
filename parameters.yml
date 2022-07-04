@@ -3,12 +3,12 @@
 num_gpus: 1
 
 # mode
-test: True
-train: False
+test: False
+train: True
 
 # config
-plotting: False
-debug: False
+plotting: True
+debug: True
 logging: True
 
 # hyperparameters
@@ -16,8 +16,8 @@ img_size: [256, 256, 1]
 training_samples: 100
 testing_samples: 100
 max_iters: 100000
-global_batch_size: 16
-replica_batch_size: 16
+global_batch_size: 4
+replica_batch_size: 4
 
 # directories
 dataset_dir: '../dataset/'
@@ -26,9 +26,9 @@ checkpoint_dir: '../checkpoints/'
 checkpoint_prefix: '../checkpoints/ckpt'
 
 # checkpoints
-checkpoint_nsave: 1
+checkpoint_nsave: 100
 checkpoint_save: False
-checkpoint_load: True
+checkpoint_load: False
 
 # loss
 disc_loss: True

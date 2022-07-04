@@ -23,25 +23,28 @@ def inner_plot(batch, discriminator, generator):
     if len(batch) != FLAGS["global_batch_size"]:
         return
 
-    masked_batch, masks = mask_image_batch(batch, n=len(batch))
+    gr_batch = batch[:, 0, ...]
+    masked_batch = batch[:, 1, ...]
 
-    generated_image = generator([masked_batch, masks], training=False)
+    generated_image = generator(masked_batch, training=False)
 
-    stage1_gen = generated_image[0]
-    stage2_gen = generated_image[1]
+    generated_image_1 = generated_image[0]
+    generated_image_2 = generated_image[1]
+    generated_image_3 = generated_image[2]
 
-    for i in range(len(stage2_gen)):
+    for i in range(len(generated_image_1)):
 
-        s1_img = stage1_gen[i, ...].numpy()
-        s2_img = stage2_gen[i, ...].numpy()
+        gen_img_1 = generated_image_1[i, ...].numpy()
+        gen_img_2 = generated_image_2[i, ...].numpy()
+        gen_img_3 = generated_image_3[i, ...].numpy()
 
         x = masked_batch[i, ...]
-        y = batch[i, ...]
+        y = gr_batch[i, ...]
 
         #disc_gen_result = discriminator([generated_image], training=False)
         #disc_gen_result = round(tf.math.reduce_mean(disc_gen_result).numpy(), 2)
 
-        images = [x, s1_img, s2_img, y]
+        images = [x, gen_img_1, gen_img_2, gen_img_3, y]
 
         fig = plt.figure()
         for i in range(len(images)):
