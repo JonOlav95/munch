@@ -32,8 +32,8 @@ def inner_plot(batch, discriminator, generator):
 
     for i in range(len(stage2_gen)):
 
-        s1_img = stage1_gen[i, ...]
-        s2_img = stage2_gen[i, ...]
+        s1_img = stage1_gen[i, ...].numpy()
+        s2_img = stage2_gen[i, ...].numpy()
 
         x = masked_batch[i, ...]
         y = batch[i, ...]
