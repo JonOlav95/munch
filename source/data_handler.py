@@ -68,8 +68,9 @@ def load_data(size):
 
         groundtruth = tf.convert_to_tensor(groundtruth)
         masked_img = tf.convert_to_tensor(masked_img)
+        mask = tf.convert_to_tensor(mask)
 
-        ds[i] = [groundtruth, masked_img]
+        ds[i] = [groundtruth, masked_img, mask]
 
     ds = tf.data.Dataset.from_tensor_slices(ds.tolist())
     ds = ds.batch(FLAGS["global_batch_size"])

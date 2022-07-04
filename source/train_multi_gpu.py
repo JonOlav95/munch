@@ -1,8 +1,9 @@
 import time
 
 from data_handler import load_data
+from generator_gated import gated_generator
 from generator_standard import generator_standard
-from loss_functions import generator_loss, discriminator_loss
+from loss_functions import generator_loss, discriminator_loss, two_stage_generator_loss
 from patch_discriminator import *
 from config import FLAGS
 from train_utility import store_loss, end_epoch
@@ -15,7 +16,7 @@ ds = strategy.experimental_distribute_dataset(ds)
 epochs = FLAGS["max_iters"]
 
 with strategy.scope():
-    generator = generator_standard(FLAGS.get("img_size"))
+    generator = gated_generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
@@ -31,12 +32,13 @@ with strategy.scope():
 def train_step(y, x):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
         gen_output = generator(x, training=True)
-        gen_output = gen_output[2]
+        stage_1 = gen_output[1]
+        stage_2 = gen_output[2]
 
         disc_real_output = disc([x, y], training=True)
         disc_generated_output = disc([x, gen_output], training=True)
 
-        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output, y)
+        gen_total_loss, gen_gan_loss, gen_l1_loss = two_stage_generator_loss(disc_generated_output, stage_1, stage_2, y)
         total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)
