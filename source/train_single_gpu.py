@@ -1,16 +1,49 @@
 import tensorflow as tf
 import statistics
+import numpy as np
 import time
 
 from data_handler import load_data
 from generator_gated import gated_generator
 from generator_standard import generator_standard
 from patch_discriminator import *
-from loss_func import generator_loss, discriminator_loss
 from loss_logger import make_log, log_loss
 from config import FLAGS
 from mask import create_mask, mask_image_batch
 from plotter import plot_one
+
+
+loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False)
+
+
+def discriminator_loss(disc_real_output, disc_generated_output):
+
+
+    disc_real_loss = loss_object(tf.ones_like(disc_real_output), disc_real_output)
+    #shape = disc_real_loss.shape
+    #current_batch_size = shape[0]
+    #num_elements = shape.num_elements()
+    #num_elements = num_elements * (FLAGS["global_batch_size"] / current_batch_size)
+    #tmp_2 = tf.reduce_sum(disc_real_loss) * (1. / num_elements)
+#
+    disc_gen_loss = loss_object(tf.zeros_like(disc_generated_output), disc_generated_output)
+
+    total_disc_loss = disc_real_loss + disc_gen_loss
+    return total_disc_loss, disc_real_loss, disc_gen_loss
+
+
+def generator_loss(disc_generated_output, gen_out, target):
+    l1_loss = 0
+    gan_loss = 0
+
+    if FLAGS["l1_loss"]:
+        l1_loss = FLAGS["l1_lambda"] * tf.reduce_mean(tf.abs(target - gen_out))
+    if FLAGS["disc_loss"]:
+        gan_loss = loss_object(tf.ones_like(disc_generated_output), disc_generated_output)
+
+    total_gen_loss = gan_loss + l1_loss
+
+    return total_gen_loss, gan_loss, l1_loss
 
 
 @tf.function
@@ -62,16 +95,25 @@ def train_single_gpu():
             gr_batch = batch[:, 0, ...]
             masked_batch = batch[:, 1, ...]
 
-            loss = train_step(gr_batch, masked_batch, generator, disc, generator_optimizer, discriminator_optimizer)
-            loss_arr.append(loss)
+            gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = train_step(gr_batch, masked_batch, generator,
+                                                                                  disc, generator_optimizer,
+                                                                                  discriminator_optimizer)
 
+            gen_gan_loss = gen_gan_loss.numpy()
+            gen_l1_loss = gen_l1_loss.numpy()
+            disc_real_loss = disc_real_loss.numpy()
+            disc_gen_loss = disc_gen_loss.numpy()
+            loss_arr.append([gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss])
+
+        loss_arr = np.asarray(loss_arr)
         print("Epoch: {}\nGEN GAN Loss: {}\nL1 Loss: {}\nDISC Real Loss: {}\nDISC Gen Loss: {}"
               .format(i,
-                      statistics.mean(loss_arr[0]),
-                      statistics.mean(loss_arr[1]),
-                      statistics.mean(loss_arr[2]),
-                      statistics.mean(loss_arr[3])),
+                      np.mean(loss_arr[:, 0]),
+                      np.mean(loss_arr[:, 1]),
+                      np.mean(loss_arr[:, 2]),
+                      np.mean(loss_arr[:, 3])),
               flush=True)
+
         print(f'Time taken for epoch {i:d}: {time.time() - start:.2f} sec', flush=True)
 
         if (i + 1) % FLAGS["checkpoint_nsave"] == 0 & FLAGS["checkpoint_save"]:

@@ -1,7 +1,7 @@
 import tensorflow as tf
 from config import FLAGS
 
-loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False, reduction=tf.keras.losses.Reduction.NONE)
+loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False, reduction=tf.keras.losses.Reduction.SUM)
 
 
 def discriminator_loss(disc_real_output, disc_generated_output):
