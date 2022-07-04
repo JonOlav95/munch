@@ -9,7 +9,6 @@ from plotter import plot_all
 
 
 def test():
-
     generator = generator_standard(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
 
@@ -25,4 +24,4 @@ def test():
 
     checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
 
-    plot_all(ds, disc, generator)
+    plot_all(ds, generator)

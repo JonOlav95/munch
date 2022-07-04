@@ -5,20 +5,20 @@ from config import FLAGS
 from mask import mask_image_batch
 
 
-def plot_all(ds, discriminator, generator):
+def plot_all(ds, generator):
     """Plot an image for each batch"""
     for batch in ds:
-        inner_plot(batch, discriminator, generator)
+        inner_plot(batch, generator)
 
 
-def plot_one(ds, discriminator, generator):
+def plot_one(ds, generator):
     """Plot one image from the dataset"""
     ds = ds.shuffle(16)
     for batch in ds.take(1):
-        inner_plot(batch, discriminator, generator)
+        inner_plot(batch, generator)
 
 
-def inner_plot(batch, discriminator, generator):
+def inner_plot(batch, generator):
 
     if len(batch) != FLAGS["global_batch_size"]:
         return

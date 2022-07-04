@@ -4,7 +4,7 @@ from config import FLAGS
 loss_object = tf.keras.losses.BinaryCrossentropy(from_logits=False, reduction=tf.keras.losses.Reduction.SUM)
 
 
-def discriminator_loss(disc_real_output, disc_generated_output):
+def discriminator_loss_multi(disc_real_output, disc_generated_output):
     disc_real_loss = loss_object(tf.ones_like(disc_real_output), disc_real_output)
     disc_gen_loss = loss_object(tf.zeros_like(disc_generated_output), disc_generated_output)
 
@@ -16,7 +16,7 @@ def discriminator_loss(disc_real_output, disc_generated_output):
     return total_disc_loss, disc_real_loss, disc_gen_loss
 
 
-def generator_loss(disc_generated_output, gen_out, target):
+def generator_loss_multi(disc_generated_output, gen_out, target):
     l1_loss = 0
     gan_loss = 0
 
