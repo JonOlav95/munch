@@ -2,7 +2,7 @@ import time
 
 from data_handler import load_data
 from generator_standard import generator_standard
-from loss_multi_gpu import generator_loss_multi, discriminator_loss_multi
+from loss_functions import generator_loss, discriminator_loss
 from patch_discriminator import *
 from config import FLAGS
 from train_utility import store_loss, end_epoch
@@ -36,8 +36,8 @@ def train_step(y, x):
         disc_real_output = disc([x, y], training=True)
         disc_generated_output = disc([x, gen_output], training=True)
 
-        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss_multi(disc_generated_output, gen_output, y)
-        total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss_multi(disc_real_output, disc_generated_output)
+        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output, y)
+        total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)
     discriminator_gradients = disc_tape.gradient(total_disc_loss, disc.trainable_variables)

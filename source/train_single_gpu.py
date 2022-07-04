@@ -5,11 +5,10 @@ import time
 
 from data_handler import load_data
 from generator_standard import generator_standard
-from loss_single_gpu import discriminator_loss_single, generator_loss_single
+from loss_functions import discriminator_loss, generator_loss
 from patch_discriminator import *
 from config import FLAGS
 from train_utility import store_loss, end_epoch
-
 
 ds = load_data(FLAGS["training_samples"])
 epochs = FLAGS["max_iters"]
@@ -35,9 +34,9 @@ def train_step(y, x):
         disc_real_output = disc([x, y], training=True)
         disc_generated_output = disc([x, gen_output], training=True)
 
-        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss_single(disc_generated_output, gen_output, y)
-        total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss_single(disc_real_output,
-                                                                                   disc_generated_output)
+        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output, y)
+        total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output,
+                                                                                  disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)
     discriminator_gradients = disc_tape.gradient(total_disc_loss, disc.trainable_variables)
@@ -61,9 +60,7 @@ def train_single_gpu():
             gr_batch = batch[:, 0, ...]
             masked_batch = batch[:, 1, ...]
 
-            losses = train_step(gr_batch, masked_batch, generator,
-                                disc, generator_optimizer,
-                                discriminator_optimizer)
+            losses = train_step(gr_batch, masked_batch)
 
             store_loss(loss_arr, losses)
 
