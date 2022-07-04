@@ -12,15 +12,15 @@ debug: True
 logging: True
 
 # hyperparameters
-img_size: [256, 256, 1]
-training_samples: 100
+img_size: [128, 128, 3]
+training_samples: 500
 testing_samples: 100
 max_iters: 100000
 global_batch_size: 4
 replica_batch_size: 4
 
 # directories
-dataset_dir: '../sketch_ds/'
+dataset_dir: '../intel_dataset/'
 log_dir: '../logs/'
 checkpoint_dir: '../checkpoints/'
 checkpoint_prefix: '../checkpoints/ckpt'

@@ -66,6 +66,13 @@ def load_data(size):
 
         masked_img = np.where(mask == 0, groundtruth, mask)
 
+        if channels == 3:
+            squeeze_mask = np.squeeze(mask)
+            mask = np.zeros(FLAGS["img_size"], dtype="float32")
+            mask[:, :, 0] = squeeze_mask
+            mask[:, :, 1] = squeeze_mask
+            mask[:, :, 2] = squeeze_mask
+
         groundtruth = tf.convert_to_tensor(groundtruth)
         masked_img = tf.convert_to_tensor(masked_img)
         mask = tf.convert_to_tensor(mask)
