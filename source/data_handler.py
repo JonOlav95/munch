@@ -57,6 +57,7 @@ def load_data(size):
         groundtruth = groundtruth.resize(img_size)
         groundtruth = np.array(groundtruth, dtype="float32")
         groundtruth = groundtruth / 255.
+        groundtruth = (groundtruth * 2) - 1
 
         if channels == 1:
             groundtruth = np.expand_dims(groundtruth, axis=2)

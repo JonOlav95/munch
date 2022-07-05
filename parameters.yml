@@ -3,8 +3,8 @@
 num_gpus: 1
 
 # mode
-test: True
-train: False
+test: False
+train: True
 
 # config
 plotting: True
@@ -20,7 +20,7 @@ global_batch_size: 16
 replica_batch_size: 16
 
 # directories
-dataset_dir: '../intel_dataset/'
+dataset_dir: '../sketch_ds/'
 log_dir: '../logs/'
 checkpoint_dir: '../checkpoints/'
 checkpoint_prefix: '../checkpoints/ckpt'

@@ -32,14 +32,16 @@ with strategy.scope():
 @tf.function
 def train_step(y, x, mask):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        gen_output = generator([x, mask], training=True)
-        stage_1 = gen_output[0]
-        stage_2 = gen_output[1]
+        gen_output = generator(x, training=True)
+
+        gen_output_1 = gen_output[0]
+        gen_output_2 = gen_output[1]
+        gen_output_3 = gen_output[2]
 
         disc_real_output = disc([x, y], training=True)
-        disc_generated_output = disc([x, stage_2], training=True)
+        disc_generated_output = disc([x, gen_output_3], training=True)
 
-        gen_total_loss, gen_gan_loss, gen_l1_loss = two_stage_generator_loss(disc_generated_output, stage_1, stage_2, y)
+        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output_3, y)
         total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)

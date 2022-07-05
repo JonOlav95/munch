@@ -49,6 +49,6 @@ def inner_plot(batch, generator):
         for j in range(len(images)):
             fig.add_subplot(1, len(images), j + 1)
             plt.axis("off")
-            plt.imshow(images[j], cmap="gray")
+            plt.imshow(images[j] * 0.5 + 0.5, cmap="gray")
 
         plt.show()
