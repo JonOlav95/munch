@@ -6,6 +6,10 @@ num_gpus: 1
 test: False
 train: True
 
+# models
+generator: "gated_generator"
+discriminator: "patchgan"
+
 # config
 plotting: True
 debug: True

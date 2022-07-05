@@ -1,12 +1,10 @@
-import os
-import json
 import tensorflow as tf
 
 from test import test
-
 from config import FLAGS
 from train_multi_gpu import train_multi_gpu
 from train_single_gpu import train_single_gpu
+
 
 if __name__ == "__main__":
 

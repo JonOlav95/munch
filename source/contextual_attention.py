@@ -143,8 +143,8 @@ def flow_to_image_tf(flow, name='flow_to_image'):
     """Tensorflow ops for computing flow to image.
     """
     with tf.compat.v1.variable_scope(name), tf.compat.v1.device('/cpu:0'):
-        #img = tf.compat.v1.py_func(flow_to_image, [flow], tf.compat.v1.float32, stateful=False)
-        img = tf.py_function(flow_to_image, [flow], tf.compat.v1.float32)
+        img = tf.compat.v1.py_func(flow_to_image, [flow], tf.compat.v1.float32, stateful=False)
+        #img = tf.py_function(flow_to_image, [flow], tf.compat.v1.float32)
         img.set_shape(flow.get_shape().as_list()[0:-1] + [3])
         img = img / 127.5 - 1.
         return img
