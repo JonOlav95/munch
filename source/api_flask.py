@@ -9,7 +9,7 @@ from PIL import Image
 from flask import Flask, request, jsonify, abort
 from config import FLAGS
 from generator_gated import gated_generator
-from patch_discriminator import discriminator
+from discriminator_patchgan import discriminator
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)

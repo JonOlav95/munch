@@ -4,7 +4,7 @@ from data_handler import load_data
 from generator_gated import gated_generator
 from generator_standard import generator_standard
 from loss_functions import generator_loss, discriminator_loss, two_stage_generator_loss
-from patch_discriminator import *
+from discriminator_patchgan import *
 from config import FLAGS
 from train_utility import store_loss, end_epoch
 
