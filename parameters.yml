@@ -3,8 +3,8 @@
 num_gpus: 1
 
 # mode
-test: False
-train: True
+test: True
+train: False
 
 # config
 plotting: True
@@ -16,8 +16,8 @@ img_size: [128, 128, 3]
 training_samples: 500
 testing_samples: 100
 max_iters: 100000
-global_batch_size: 4
-replica_batch_size: 4
+global_batch_size: 16
+replica_batch_size: 16
 
 # directories
 dataset_dir: '../intel_dataset/'

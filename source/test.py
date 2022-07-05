@@ -9,7 +9,7 @@ from plotter import plot_all
 
 
 def test():
-    generator = generator_standard(FLAGS.get("img_size"))
+    generator = gated_generator(FLAGS.get("img_size"))
     disc = discriminator(FLAGS.get("img_size"))
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
@@ -25,3 +25,4 @@ def test():
     checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
 
     plot_all(ds, generator)
+

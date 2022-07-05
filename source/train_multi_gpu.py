@@ -55,7 +55,7 @@ def distributed_step_fn(batch):
     batch = batch.values[0]
 
     if len(batch) < FLAGS["replica_batch_size"]:
-        return
+        return None
 
     gr_batch = batch[:, 0, ...]
     masked_batch = batch[:, 1, ...]
@@ -82,6 +82,7 @@ def train_multi_gpu():
         loss_arr = []
         start = time.time()
         for (losses) in map(distributed_step_fn, ds):
-            store_loss(loss_arr, losses)
+            if losses:
+                store_loss(loss_arr, losses)
 
         end_epoch(i, loss_arr, start, checkpoint, ds, generator)
