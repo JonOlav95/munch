@@ -18,7 +18,7 @@ def downsample(x, filters, kernel_size=2, stride=2):
     return x
 
 
-def discriminator(img_size):
+def discriminator_gated(img_size):
     input_img = tf.keras.layers.Input(shape=img_size)
     input_mask = tf.keras.layers.Input(shape=img_size[:2] + [1])
 

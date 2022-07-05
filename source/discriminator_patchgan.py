@@ -18,7 +18,7 @@ def downsample(x, filters, kernel_size=4, stride=2, apply_batchnorm=True):
     return x
 
 
-def discriminator(img_size):
+def discriminator_patchgan(img_size):
     input_img = tf.keras.layers.Input(shape=img_size)
     input_target = tf.keras.layers.Input(shape=img_size)
     initializer = tf.random_normal_initializer(0., 0.02)

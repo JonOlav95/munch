@@ -1,6 +1,7 @@
 import time
 
 from data_handler import load_data
+from discriminator_gated import discriminator_gated
 from generator_gated import gated_generator
 from generator_standard import generator_standard
 from loss_functions import generator_loss, discriminator_loss, two_stage_generator_loss
@@ -17,7 +18,7 @@ epochs = FLAGS["max_iters"]
 
 with strategy.scope():
     generator = gated_generator(FLAGS.get("img_size"))
-    disc = discriminator(FLAGS.get("img_size"))
+    disc = discriminator_gated(FLAGS.get("img_size"))
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
     discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)

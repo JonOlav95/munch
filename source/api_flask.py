@@ -9,13 +9,13 @@ from PIL import Image
 from flask import Flask, request, jsonify, abort
 from config import FLAGS
 from generator_gated import gated_generator
-from discriminator_patchgan import discriminator
+from discriminator_patchgan import discriminator_patchgan
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
 generator = gated_generator(FLAGS.get("img_size"))
-disc = discriminator(FLAGS.get("img_size"))
+disc = discriminator_patchgan(FLAGS.get("img_size"))
 generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 checkpoint = tf.train.Checkpoint(generator_optimizer=generator_optimizer,

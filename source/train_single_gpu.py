@@ -15,7 +15,7 @@ ds = load_data(FLAGS["training_samples"])
 epochs = FLAGS["max_iters"]
 
 generator = gated_generator(FLAGS.get("img_size"))
-disc = discriminator(FLAGS.get("img_size"))
+disc = discriminator_patchgan(FLAGS.get("img_size"))
 
 generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
