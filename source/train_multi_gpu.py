@@ -13,7 +13,7 @@ def distributed_step_fn(batch):
 
     gr_batch = batch[:, 0, ...]
     masked_batch = batch[:, 1, ...]
-    mask_batch = batch[:, 2, ..., 0]
+    mask_batch = batch[:, 2, ...]
 
     gen_gan_loss, gen_l1_loss, disc_real_loss, disc_gen_loss = strategy.run(train_step, args=(
         gr_batch, masked_batch, mask_batch
