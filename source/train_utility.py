@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 
 from config import FLAGS
-from loss_functions import generator_loss, discriminator_loss
+from loss_functions import generator_loss, discriminator_loss, two_stage_generator_loss
 from model_variables import *
 from plotter import plot_one
 
@@ -11,16 +11,15 @@ from plotter import plot_one
 @tf.function
 def train_step(y, x, mask):
     with tf.GradientTape() as gen_tape, tf.GradientTape() as disc_tape:
-        gen_output = generator(x, training=True)
+        gen_output = generator([x, mask], training=True)
 
-        gen_output_1 = gen_output[0]
-        gen_output_2 = gen_output[1]
-        gen_output_3 = gen_output[2]
+        stage_1 = gen_output[0]
+        stage_2 = gen_output[1]
 
         disc_real_output = discriminator([x, y], training=True)
-        disc_generated_output = discriminator([x, gen_output_3], training=True)
+        disc_generated_output = discriminator([x, stage_2], training=True)
 
-        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, gen_output_3, y)
+        gen_total_loss, gen_gan_loss, gen_l1_loss = two_stage_generator_loss(disc_generated_output, stage_1, stage_2, y)
         total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)
@@ -41,7 +40,7 @@ def store_loss(loss_arr, losses):
     return
 
 
-def end_epoch(epoch, loss_arr, start, checkpoint, ds, generator):
+def end_epoch(epoch, loss_arr, start):
     loss_arr = np.asarray(loss_arr)
 
     print("Epoch: {}\nGEN GAN Loss: {}\nL1 Loss: {}\nDISC Real Loss: {}\nDISC Gen Loss: {}"

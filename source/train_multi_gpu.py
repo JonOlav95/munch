@@ -39,4 +39,4 @@ def train_multi_gpu():
             if losses:
                 store_loss(loss_arr, losses)
 
-        end_epoch(i, loss_arr, start, checkpoint, ds, generator)
+        end_epoch(i, loss_arr, start)

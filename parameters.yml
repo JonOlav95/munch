@@ -3,15 +3,15 @@
 num_gpus: 1
 
 # mode
-test: True
-train: False
+test: False
+train: True
 
 # models
-generator: "generator_cnn"
-discriminator: "discriminator_patchgan"
+generator: "generator_gated"
+discriminator: "discriminator_gated"
 
 # config
-plotting: True
+plotting: False
 debug: True
 logging: True
 
