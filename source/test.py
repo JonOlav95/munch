@@ -9,7 +9,7 @@ from plotter import plot_all
 
 
 def test():
-    generator = gated_generator(FLAGS.get("img_size"))
+    generator = generator_standard(FLAGS.get("img_size"))
     disc = discriminator_patchgan(FLAGS.get("img_size"))
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)

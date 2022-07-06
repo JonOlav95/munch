@@ -3,12 +3,12 @@
 num_gpus: 1
 
 # mode
-test: False
-train: True
+test: True
+train: False
 
 # models
-generator: "gated_generator"
-discriminator: "patchgan"
+generator: "generator_cnn"
+discriminator: "discriminator_patchgan"
 
 # config
 plotting: True
