@@ -9,6 +9,7 @@ from plotter import plot_all
 
 
 def test():
+    
     generator = generator_standard(FLAGS.get("img_size"))
     disc = discriminator_patchgan(FLAGS.get("img_size"))
 
