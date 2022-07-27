@@ -1,36 +1,30 @@
 import os
 import tensorflow as tf
 import numpy as np
-import matplotlib.pyplot as plt
-
-from scipy import ndimage
 from PIL import Image
 from config import FLAGS
 from mask import create_mask
 
 
-def distance_transform(img):
-    threshold = 0.7
-    binary_img = 1.0 * (img > threshold)
-    distance_img = ndimage.distance_transform_edt(binary_img)
+def load_data(size=FLAGS["training_samples"]):
+    """Custom function used to load unlabeled data from a folder.
 
-    images = [distance_img, binary_img]
+    If the folder contains subfolders, the function explores those subfolders and returns
+    the elements within. If the number of samples is less than the size argument,
+    all files in the folders is loaded. Function is compatiable with both grayscale
+    and RGB images.
 
-    fig = plt.figure()
-    for i in range(len(images)):
-        fig.add_subplot(1, len(images), i + 1)
-        plt.axis("off")
-        plt.imshow(images[i], cmap="gray")
+    Args:
+        size: The size of the dataset.
 
-    plt.show()
-
-    return binary_img, distance_img
-
-
-def load_data(size):
+    Returns:
+        The dataset as a Tensor split into three objects; the groundtruth, the maksed image,
+        and the mask. Shape of the dataset is (3, width, heigh, channels).
+    """
     path = FLAGS["dataset_dir"]
     _, dirs, filenames = next(os.walk(path))
 
+    # Get all filenames in the folder(s)
     if dirs:
         filenames = []
         for d in dirs:
@@ -56,15 +50,16 @@ def load_data(size):
 
         groundtruth = groundtruth.resize(img_size)
         groundtruth = np.array(groundtruth, dtype="float32")
+
+        # Normalize the data to a range between -1 and 1
         groundtruth = groundtruth / 255.
         groundtruth = (groundtruth * 2) - 1
 
         if channels == 1:
             groundtruth = np.expand_dims(groundtruth, axis=2)
 
-        dim = FLAGS["img_size"][:2]
-        mask = create_mask(dim)
-
+        # Create the mask and a masked image.
+        mask = create_mask(FLAGS["img_size"][:2])
         masked_img = np.where(mask == 0, groundtruth, mask)
 
         if channels == 3:

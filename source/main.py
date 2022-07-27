@@ -1,5 +1,4 @@
 import tensorflow as tf
-
 from test import test
 from config import FLAGS
 from train_multi_gpu import train_multi_gpu

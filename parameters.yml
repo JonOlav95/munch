@@ -6,10 +6,6 @@ num_gpus: 1
 test: False
 train: True
 
-# models
-generator: "generator_gated"
-discriminator: "discriminator_gated"
-
 # config
 plotting: True
 debug: True

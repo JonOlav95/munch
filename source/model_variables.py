@@ -2,10 +2,7 @@ import tensorflow as tf
 from config import FLAGS
 from data_handler import load_data
 from discriminator_gated import discriminator_gated
-from discriminator_patchgan import discriminator_patchgan
 from generator_gated import gated_generator
-from generator_sketch_tensor import st_generator
-from generator_standard import generator_standard
 
 generator = None
 discriminator = None
@@ -23,17 +20,8 @@ def init_variables():
     global discriminator_optimizer
     global checkpoint
 
-    if FLAGS["generator"] == "generator_gated":
-        generator = gated_generator(FLAGS.get("img_size"))
-    elif FLAGS["generator"] == "generator_cnn":
-        generator = generator_standard(FLAGS.get("img_size"))
-    elif FLAGS["generator"] == "generator_st":
-        generator = st_generator(FLAGS.get("img_size"))
-
-    if FLAGS["discriminator"] == "discriminator_gated":
-        discriminator = discriminator_gated(FLAGS.get("img_size"))
-    elif FLAGS["discriminator"] == "discriminator_patchgan":
-        discriminator = discriminator_patchgan(FLAGS.get("img_size"))
+    generator = gated_generator(FLAGS.get("img_size"))
+    discriminator = discriminator_gated(FLAGS.get("img_size"))
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
     discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
