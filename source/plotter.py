@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import tensorflow as tf
 
 from config import FLAGS
-from mask import mask_image_batch
 from datetime import datetime
 
 
@@ -41,9 +40,6 @@ def inner_plot(batch, generator):
         x = masked_batch[i, ...]
         y = gr_batch[i, ...]
 
-        #disc_gen_result = discriminator([generated_image], training=False)
-        #disc_gen_result = round(tf.math.reduce_mean(disc_gen_result).numpy(), 2)
-
         images = [x, gen_img_1, gen_img_2, y]
 
         fig = plt.figure()
@@ -52,5 +48,6 @@ def inner_plot(batch, generator):
             plt.axis("off")
             plt.imshow(images[j] * 0.5 + 0.5, cmap="gray")
 
-        fig.savefig(fname=FLAGS["plot_dir"] + str(datetime.now().strftime("%Y%m%d%H%M%S")), format="png")
+        # Can be used to store the plotted image.
+        #fig.savefig(fname=FLAGS["plot_dir"] + str(datetime.now().strftime("%Y%m%d%H%M%S")), format="png")
         plt.show()

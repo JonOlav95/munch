@@ -6,7 +6,6 @@
 
 `plotting` Plot one image after each training epoch. \
 `debug` Debug mode. Should be disabled when training with `num_gpus > 1`. \
-`logging` Log loss for each epoch.
 
 `img_size` Size of each image in the dataset and number of channels. \
 `training_samples` If more than the training dataset, the entire training dataset is used. \
