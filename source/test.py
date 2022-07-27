@@ -1,17 +1,16 @@
 import tensorflow as tf
 
 from data_handler import load_data
-from generator_standard import generator_standard
-from discriminator_patchgan import discriminator_patchgan
+from discriminator_gated import discriminator_gated
 from generator_gated import gated_generator
 from config import FLAGS
 from plotter import plot_all
 
 
 def test():
-    
-    generator = generator_standard(FLAGS.get("img_size"))
-    disc = discriminator_patchgan(FLAGS.get("img_size"))
+
+    generator = gated_generator(FLAGS.get("img_size"))
+    disc = discriminator_gated(FLAGS.get("img_size"))
 
     generator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
     discriminator_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)

@@ -5,7 +5,14 @@ from train_utility import store_loss, end_epoch, train_step
 
 
 def distributed_step_fn(batch):
+    """Additional functionality required before the default train step.
 
+    Args:
+        batch: One batch from the dataset.
+
+    Returns:
+        The losses as a list.
+    """
     batch = batch.values[0]
 
     if len(batch) < FLAGS["replica_batch_size"]:
@@ -28,6 +35,12 @@ def distributed_step_fn(batch):
 
 
 def train_multi_gpu():
+    """Train on multiple GPUs
+
+    This is set up to train on multiple GPUs on the same node, not for
+    a homogeneous cluster on multiple nodes.
+    https://keras.io/guides/distributed_training/
+    """
     if FLAGS["checkpoint_load"]:
         checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
 

@@ -5,6 +5,7 @@ from train_utility import store_loss, end_epoch, train_step
 
 
 def train_single_gpu():
+    """Train the model using one GPU."""
     if FLAGS["checkpoint_load"]:
         checkpoint.restore(tf.train.latest_checkpoint(FLAGS["checkpoint_dir"]))
 

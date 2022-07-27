@@ -15,11 +15,11 @@ def load_data(size=FLAGS["training_samples"]):
     and RGB images.
 
     Args:
-        size: The size of the dataset.
+        size: The size of the dataset as an integer.
 
     Returns:
         The dataset as a Tensor split into three objects; the groundtruth, the maksed image,
-        and the mask. Shape of the dataset is (3, width, heigh, channels).
+        and the mask. Shape of the dataset is (batch_size, 3, width, heigh, channels).
     """
     path = FLAGS["dataset_dir"]
     _, dirs, filenames = next(os.walk(path))
