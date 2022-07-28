@@ -13,8 +13,6 @@ from PIL import Image
 from flask import Flask, request, jsonify, abort
 from config import FLAGS
 #from disc_colab import disc_colab
-from generator_standard import generator_standard
-from discriminator_patchgan import discriminator_patchgan
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
