@@ -3,7 +3,15 @@ import tensorflow as tf
 import numpy as np
 from PIL import Image
 from config import FLAGS
-from mask import create_mask
+from mask import mask_image
+
+import matplotlib.pyplot as plt
+
+
+def normalize(img):
+    img = img / 255.
+    img = (img * 2) - 1
+    return img
 
 
 def load_data(size=FLAGS["training_samples"]):
@@ -51,16 +59,16 @@ def load_data(size=FLAGS["training_samples"]):
         groundtruth = groundtruth.resize(img_size)
         groundtruth = np.array(groundtruth, dtype="float32")
 
-        # Normalize the data to a range between -1 and 1
-        groundtruth = groundtruth / 255.
-        groundtruth = (groundtruth * 2) - 1
-
         if channels == 1:
             groundtruth = np.expand_dims(groundtruth, axis=2)
 
         # Create the mask and a masked image.
-        mask = create_mask(FLAGS["img_size"][:2])
-        masked_img = np.where(mask == 0, groundtruth, mask)
+        masked_img, mask = mask_image(groundtruth)
+
+        # Normalize the data to a range between -1 and 1
+        groundtruth = normalize(groundtruth)
+        masked_img = normalize(masked_img)
+        mask = normalize(mask)
 
         if channels == 3:
             squeeze_mask = np.squeeze(mask)

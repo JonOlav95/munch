@@ -1,7 +1,10 @@
 import numpy as np
 import random
 import tensorflow as tf
+from PIL import Image
+
 from config import FLAGS
+import matplotlib.pyplot as plt
 
 
 def create_circular_mask(w, h):
@@ -32,9 +35,9 @@ def create_rec_mask(w, h):
     return rec_mask
 
 
-def create_mask(dim):
-    w = dim[0]
-    h = dim[1]
+def mask_image(groundtruth):
+    w = FLAGS["img_size"][0]
+    h = FLAGS["img_size"][1]
 
     circle_mask = create_circular_mask(w, h)
     rec_mask = create_rec_mask(w, h)
@@ -43,11 +46,14 @@ def create_mask(dim):
     mask = mask.astype(np.float32)
     mask = np.expand_dims(mask, axis=2)
 
-    return mask
+    masked_img = np.where(mask == 0, groundtruth, 255)
+    new_mask = np.where(masked_img >= 254, 255, 0)
+
+    return masked_img, new_mask
 
 
 def mask_image_batch(groundtruth_batch, dim=FLAGS["img_size"][:2], n=FLAGS["replica_batch_size"]):
-    mask = create_mask(dim)
+    mask = mask_image(dim)
 
     groundtruth_cast = groundtruth_batch.numpy()
     arr = []

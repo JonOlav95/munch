@@ -21,7 +21,7 @@ replica_batch_size: 8
 
 # directories
 plot_dir: "../plot"
-dataset_dir: '../sketch_ds/'
+dataset_dir: '../dataset/'
 log_dir: '../logs/'
 checkpoint_dir: '../checkpoints/'
 checkpoint_prefix: '../checkpoints/ckpt'
