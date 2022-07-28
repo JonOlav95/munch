@@ -3,7 +3,7 @@ import numpy as np
 import tensorflow as tf
 
 from config import FLAGS
-from loss_functions import generator_loss, discriminator_loss, two_stage_generator_loss
+from loss_functions import generator_loss, discriminator_loss
 from model_variables import *
 from plotter import plot_one
 
@@ -29,7 +29,7 @@ def train_step(y, x, mask):
         disc_real_output = discriminator([x, y], training=True)
         disc_generated_output = discriminator([x, stage_2], training=True)
 
-        gen_total_loss, gen_gan_loss, gen_l1_loss = two_stage_generator_loss(disc_generated_output, stage_1, stage_2, y)
+        gen_total_loss, gen_gan_loss, gen_l1_loss = generator_loss(disc_generated_output, stage_1, stage_2, y)
         total_disc_loss, disc_real_loss, disc_gen_loss = discriminator_loss(disc_real_output, disc_generated_output)
 
     generator_gradients = gen_tape.gradient(gen_total_loss, generator.trainable_variables)
