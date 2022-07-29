@@ -10,8 +10,8 @@ def gated_generator(img_size):
     input_mask = tf.keras.layers.Input(shape=img_size[:2] + [1], batch_size=FLAGS["global_batch_size"])
 
     n_channeles = img_size[2]
-    one_mask = input_mask[0, ...]
-    one_mask = tf.expand_dims(one_mask, axis=0)
+    #one_mask = input_mask[0, ...]
+    #one_mask = tf.expand_dims(one_mask, axis=0)
 
     x = tf.keras.layers.concatenate([input_img, input_mask])
 
@@ -19,14 +19,14 @@ def gated_generator(img_size):
 
     filters = 48
 
-    x = gated_conv(x, filters, 5, 1, name='conv1')
-    x = gated_conv(x, 2 * filters, 3, 2, name='conv2_downsample')
+    x = gated_conv(x, filters, 7, 1, name='conv1')
+    x = gated_conv(x, 2 * filters, 5, 2, name='conv2_downsample')
     x = gated_conv(x, 2 * filters, 3, 1, name='conv3')
     x = gated_conv(x, 4 * filters, 3, 2, name='conv4_downsample')
     x = gated_conv(x, 4 * filters, 3, 1, name='conv5')
     x = gated_conv(x, 4 * filters, 3, 1, name='conv6')
 
-    mask_s = resize_mask_like(one_mask, x)
+    mask_s = resize_mask_like(input_mask, x)
 
     x = gated_conv(x, 4 * filters, 3, rate=2, name='conv7_atrous')
     x = gated_conv(x, 4 * filters, 3, rate=4, name='conv8_atrous')

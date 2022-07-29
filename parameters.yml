@@ -3,13 +3,12 @@
 num_gpus: 1
 
 # mode
-test: True
-train: False
+test: False
+train: True
 
 # config
-plotting: True
+plotting: False
 debug: True
-logging: True
 
 # hyperparameters
 img_size: [256, 256, 1]
