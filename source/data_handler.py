@@ -5,8 +5,6 @@ from PIL import Image
 from config import FLAGS
 from mask import mask_image
 
-import matplotlib.pyplot as plt
-
 
 def normalize(img):
     img = img / 255.

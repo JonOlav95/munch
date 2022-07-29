@@ -47,9 +47,10 @@ def mask_image(groundtruth):
     mask = np.expand_dims(mask, axis=2)
 
     masked_img = np.where(mask == 0, groundtruth, 255)
-    new_mask = np.where(masked_img >= 254, 255, 0)
+    accurate_mask = np.where(masked_img >= 254, 255, 0)
+    accurate_mask = accurate_mask.astype(np.float32)
 
-    return masked_img, new_mask
+    return masked_img, accurate_mask
 
 
 def mask_image_batch(groundtruth_batch, dim=FLAGS["img_size"][:2], n=FLAGS["replica_batch_size"]):

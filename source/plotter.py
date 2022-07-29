@@ -23,9 +23,9 @@ def inner_plot(batch, generator):
     if len(batch) != FLAGS["global_batch_size"]:
         return
 
-    gr_batch = batch[:, 0, ...]
-    masked_batch = batch[:, 1, ...]
-    mask_batch = batch[:, 2, ...]
+    gr_batch = batch[0, 0, ...]
+    masked_batch = batch[0, 1, ...]
+    mask_batch = batch[0, 2, ...]
 
     generated_image = generator([masked_batch, mask_batch], training=False)
 

@@ -4,7 +4,6 @@ from config import FLAGS
 from train_multi_gpu import train_multi_gpu
 from train_single_gpu import train_single_gpu
 
-
 if __name__ == "__main__":
 
     assert int(FLAGS["replica_batch_size"] * FLAGS["num_gpus"]) == FLAGS["global_batch_size"]
