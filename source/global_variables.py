@@ -6,7 +6,7 @@ from generator_gated import gated_generator
 
 generator = None
 discriminator = None
-ds = load_data(FLAGS["training_samples"])
+ds = load_data()
 generator_optimizer = None
 discriminator_optimizer = None
 checkpoint = None
