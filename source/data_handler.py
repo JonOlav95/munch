@@ -12,21 +12,21 @@ def normalize(img):
     return img
 
 
-def load_data(size=FLAGS["training_samples"]):
+def load_custom_ds(size=FLAGS["training_samples"]):
     """Custom function used to load unlabeled data from a folder.
 
-    If the folder contains subfolders, the function explores those subfolders and returns
-    the elements within. If the number of samples is less than the size argument,
-    all files in the folders is loaded. Function is compatiable with both grayscale
-    and RGB images.
+     If the folder contains subfolders, the function explores those subfolders and returns
+     the elements within. If the number of samples is less than the size argument,
+     all files in the folders is loaded. Function is compatiable with both grayscale
+     and RGB images.
 
-    Args:
-        size: The size of the dataset as an integer.
+     Args:
+         size: The size of the dataset as an integer.
 
-    Returns:
-        The dataset as a Tensor split into three objects; the groundtruth, the maksed image,
-        and the mask. Shape of the dataset is (batch_size, 3, width, heigh, channels).
-    """
+     Returns:
+         The dataset as a Tensor split into three objects; the groundtruth, the maksed image,
+         and the mask. Shape of the dataset is (batch_size, 3, width, heigh, channels).
+     """
     path = FLAGS["dataset_dir"]
     _, dirs, filenames = next(os.walk(path))
 
@@ -42,8 +42,6 @@ def load_data(size=FLAGS["training_samples"]):
     ds_size = len(filenames)
     if ds_size > size:
         ds_size = size - 1
-
-    ds = np.empty(ds_size, dtype=object)
 
     img_size = FLAGS["img_size"][:2]
     channels = FLAGS["img_size"][2]
@@ -79,9 +77,11 @@ def load_data(size=FLAGS["training_samples"]):
         masked_img = tf.convert_to_tensor(masked_img)
         mask = tf.convert_to_tensor(mask)
 
-        ds[i] = [groundtruth, masked_img, mask]
+        yield tf.stack([groundtruth, masked_img, mask])
 
-    ds = tf.data.Dataset.from_tensor_slices(ds.tolist())
+
+def load_data():
+    ds = tf.data.Dataset.from_generator(load_custom_ds, output_types=tf.float32)
     ds = ds.batch(FLAGS["global_batch_size"])
 
     return ds
