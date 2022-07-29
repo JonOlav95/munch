@@ -15,7 +15,6 @@
 `replica_batch_size` The batch size per GPU, has to correspond with the global batch size.
 
 `dataset_dir` Dataset directory. \
-`log_dir` Loss logs directory.\
 `checkpoint_dir` Checkpoint directory. \
 `checkpoint_prefix` Checkpoint prefix, should be ckpt.
 
