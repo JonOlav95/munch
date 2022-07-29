@@ -5,7 +5,7 @@
 `train` Train mode. 
 
 `plotting` Plot one image after each training epoch. \
-`debug` Debug mode. Should be disabled when training with `num_gpus > 1`. \
+`debug` Debug mode. Should be disabled when training with `num_gpus > 1`. 
 
 `img_size` Size of each image in the dataset and number of channels. \
 `training_samples` If more than the training dataset, the entire training dataset is used. \
@@ -28,4 +28,9 @@
 `l1_lambda` L1 loss variable.
 
 ## Requirements
-`pip install -r requirements.txt`
+1. `pip install -r requirements.txt` \
+2. Set location for `parameters.yml` in `source/config.py`\
+3. Configure `parameters.yml`
+
+## References
+https://github.com/JiahuiYu/generative_inpainting
