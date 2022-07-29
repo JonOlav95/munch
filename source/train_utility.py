@@ -4,7 +4,7 @@ import tensorflow as tf
 
 from config import FLAGS
 from loss_functions import generator_loss, discriminator_loss
-from model_variables import *
+from global_variables import *
 from plotter import plot_one
 
 

@@ -1,6 +1,6 @@
 import time
 
-from model_variables import *
+from global_variables import *
 from train_utility import store_loss, end_epoch, train_step
 
 
