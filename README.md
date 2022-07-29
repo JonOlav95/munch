@@ -27,8 +27,8 @@
 `l1_lambda` L1 loss variable.
 
 ## Requirements
-1. `pip install -r requirements.txt` \
-2. Set location for `parameters.yml` in `source/config.py`\
+1. `pip install -r requirements.txt` 
+2. Set location for `parameters.yml` in `source/config.py`
 3. Configure `parameters.yml`
 
 ## References
