@@ -38,13 +38,12 @@ def discriminator_loss(disc_real_output, disc_generated_output):
     return total_disc_loss, disc_real_loss, disc_gen_loss
 
 
-def generator_loss(disc_generated_output, stage_1, stage_2, target):
+def generator_loss(disc_generated_output, gen_output, target):
     l1_loss = 0
     gan_loss = 0
 
     if FLAGS["l1_loss"]:
-        l1_loss = FLAGS["l1_lambda"] * tf.reduce_mean(tf.abs(target - stage_1))
-        l1_loss += FLAGS["l1_lambda"] * tf.reduce_mean(tf.abs(target - stage_2))
+        l1_loss = FLAGS["l1_lambda"] * tf.reduce_mean(tf.abs(target - gen_output))
     if FLAGS["disc_loss"]:
         gan_loss = loss_object(tf.ones_like(disc_generated_output), disc_generated_output)
 

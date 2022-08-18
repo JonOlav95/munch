@@ -1,5 +1,7 @@
 import tensorflow as tf
 
+from config import FLAGS
+
 
 def upsample(filters, size, apply_dropout=False):
     initializer = tf.random_normal_initializer(0., 0.02)
@@ -85,7 +87,7 @@ def u_net(inputs, channels):
     return x
 
 
-def generator_standard(img_size):
+def generator_standard(img_size=FLAGS["img_size"]):
     input_1 = tf.keras.layers.Input(shape=img_size)
     output_1 = u_net(input_1, img_size[2])
 
