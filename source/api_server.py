@@ -12,13 +12,14 @@ from skimage.filters import threshold_otsu, threshold_local
 from PIL import Image
 from flask import Flask, request, jsonify, abort
 from config import FLAGS
-#from disc_colab import disc_colab
+from discriminator_gated import discriminator_gated
+from generator_gated import gated_generator
 
 app = Flask(__name__)
 app.logger.setLevel(logging.DEBUG)
 
-generator = generator_standard()
-discriminator = disc_colab()
+generator = gated_generator(FLAGS["img_size"])
+discriminator = discriminator_gated(FLAGS["img_size"])
 g_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 d_optimizer = tf.keras.optimizers.Adam(2e-4, beta_1=0.5)
 checkpoint = tf.train.Checkpoint(generator_optimizer=g_optimizer,
@@ -41,15 +42,30 @@ def grayscale_to_binary(img):
 
 
 def generate_image(numpy_image):
-    # Batch size (1)
-    img_arr = np.expand_dims(numpy_image, axis=-1)
-    img_arr = np.expand_dims(img_arr, axis=0)
 
-    # img_arr = img_arr / 255.
-    img_arr = (img_arr * 2) - 1
+    mask = np.where(numpy_image >= 254, 255, 0)
 
-    img_arr = tf.convert_to_tensor(img_arr)
-    gen_output = generator(img_arr, training=False)
+
+    plt.imshow(mask, cmap="gray")
+    plt.show()
+
+
+    mask = np.expand_dims(mask, axis=0)
+    mask = np.expand_dims(mask, axis=-1)
+
+    mask = mask / 255.
+    mask = (mask * 2) - 1
+
+    img = np.expand_dims(numpy_image, axis=0)
+    img = np.expand_dims(img, axis=-1)
+
+    img = img / 255.
+    img = (img * 2) - 1
+
+    img_tensor = tf.convert_to_tensor(img)
+    mask_tensor = tf.convert_to_tensor(mask)
+
+    gen_output = generator([img_tensor, mask_tensor], training=False)
     gen_img = gen_output[0]
     gen_img = gen_img.numpy()
 
@@ -58,8 +74,8 @@ def generate_image(numpy_image):
 
     gen_img *= 255.
 
-    # plt.imshow(gen_img, cmap="gray")
-    # plt.show()
+    plt.imshow(gen_img, cmap="gray")
+    plt.show()
 
     return gen_img
 
@@ -77,21 +93,21 @@ def test_method():
     img_bytes = base64.b64decode(im_b64.encode('utf-8'))
 
     # convert bytes data to PIL Image object
-    img = Image.open(io.BytesIO(img_bytes))
+    img = Image.open(io.BytesIO(img_bytes)).convert("L")
 
     # PIL image object to numpy array
     img_arr = np.asarray(img)
-    img_arr = cv2.resize(img_arr, dsize=(128, 128))
+    img_arr = cv2.resize(img_arr, dsize=(256, 256))
 
-    # plt.imshow(img_arr, cmap="gray")
-    # plt.show()
+    plt.imshow(img_arr, cmap="gray")
+    plt.show()
 
-    binary_image = grayscale_to_binary(img_arr)
+    #binary_image = grayscale_to_binary(img_arr)
 
     # plt.imshow(binary_image, cmap="gray")
     # plt.show()
 
-    gen_img = generate_image(binary_image)
+    gen_img = generate_image(img_arr)
 
     # plt.imshow(gen_img, cmap="gray")
     # plt.show()

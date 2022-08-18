@@ -10,7 +10,7 @@ from PIL import Image
 # api-endpoint
 URL = "http://localhost:8080/test"
 
-with open("../bird2.png", "rb") as f:
+with open("../4994.JPEG", "rb") as f:
     im_bytes = f.read()
 
 im_b64 = base64.b64encode(im_bytes).decode("utf8")
